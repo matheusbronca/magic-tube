@@ -7,6 +7,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { DEFAULT_LIMIT } from "@/constants";
 import { toast } from "sonner";
+import { ResponsiveModal } from "@/components/responsive-modal";
+import { StudioUploader } from "./studio-uploader";
 
 export const StudioUploadModal = () => {
   const trpc = useTRPC();
@@ -29,17 +31,33 @@ export const StudioUploadModal = () => {
   console.log(createVideo.data);
 
   return (
-    <Button
-      variant="secondary"
-      onClick={() => createVideo.mutate()}
-      disabled={createVideo.isPending}
-    >
-      {createVideo.isPending ? (
-        <Loader2Icon className="animate-spin" />
-      ) : (
-        <PlusIcon />
-      )}
-      Create
-    </Button>
+    <>
+      <ResponsiveModal
+        title="Upload a video"
+        open={!!createVideo.data}
+        onOpenChange={() => createVideo.reset()}
+      >
+        {createVideo.data?.url ? (
+          <StudioUploader
+            endpoint={createVideo.data.url}
+            onSuccess={() => {}}
+          />
+        ) : (
+          <Loader2Icon />
+        )}
+      </ResponsiveModal>
+      <Button
+        variant="secondary"
+        onClick={() => createVideo.mutate()}
+        disabled={createVideo.isPending}
+      >
+        {createVideo.isPending ? (
+          <Loader2Icon className="animate-spin" />
+        ) : (
+          <PlusIcon />
+        )}
+        Create
+      </Button>
+    </>
   );
 };
