@@ -41,6 +41,7 @@ import {
   CopyIcon,
   Globe2Icon,
   ImagePlusIcon,
+  Loader2Icon,
   LockIcon,
   MoreVerticalIcon,
   RotateCcwIcon,
@@ -60,6 +61,12 @@ import Image from "next/image";
 
 import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 interface FormSectionProps {
   videoId: string;
@@ -117,6 +124,48 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
           trpc.studio.getMany.queryFilter({ limit: DEFAULT_LIMIT }),
         );
         toast.success("Thumbnail restored");
+      },
+      onError: () => {
+        toast.error("Something went wrong");
+      },
+    }),
+  );
+
+  const generateThumbnail = useMutation(
+    trpc.videos.generateThumbnail.mutationOptions({
+      onSuccess: () => {
+        toast.success("Background job started", {
+          description: "This may take some time",
+          descriptionClassName: "!text-muted-foreground",
+        });
+      },
+      onError: () => {
+        toast.error("Something went wrong");
+      },
+    }),
+  );
+
+  const generateTitle = useMutation(
+    trpc.videos.generateTitle.mutationOptions({
+      onSuccess: () => {
+        toast.success("Background job started", {
+          description: "This may take some time",
+          descriptionClassName: "!text-muted-foreground",
+        });
+      },
+      onError: () => {
+        toast.error("Something went wrong");
+      },
+    }),
+  );
+
+  const generateDescription = useMutation(
+    trpc.videos.generateDescription.mutationOptions({
+      onSuccess: () => {
+        toast.success("Background job started", {
+          description: "This may take some time",
+          descriptionClassName: "!text-muted-foreground",
+        });
       },
       onError: () => {
         toast.error("Something went wrong");
@@ -192,8 +241,36 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Title
-                      {/* TODO: Add AI generate button */}
+                      <div className="flex items-center gap-x-2">
+                        Title
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                type="button"
+                                className="rounded-full size-6 [&_svg]:size-3"
+                                disabled={
+                                  generateTitle.isPending || !data.muxTrackId
+                                }
+                                onClick={() =>
+                                  generateTitle.mutate({ id: videoId })
+                                }
+                              >
+                                {generateTitle.isPending ? (
+                                  <Loader2Icon className="animate-spin" />
+                                ) : (
+                                  <SparklesIcon />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent align="center" side="right">
+                              <p>Generate a title using AI</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -211,8 +288,37 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Description
-                      {/* TODO: Add AI generate button */}
+                      <div className="flex items-center gap-x-2">
+                        Description
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                type="button"
+                                className="rounded-full size-6 [&_svg]:size-3"
+                                disabled={
+                                  generateDescription.isPending ||
+                                  !data.muxTrackId
+                                }
+                                onClick={() =>
+                                  generateDescription.mutate({ id: videoId })
+                                }
+                              >
+                                {generateDescription.isPending ? (
+                                  <Loader2Icon className="animate-spin" />
+                                ) : (
+                                  <SparklesIcon />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent align="center" side="right">
+                              <p>Generate a description using AI</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                     </FormLabel>
                     <FormControl>
                       <Textarea
@@ -260,7 +366,11 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                               <ImagePlusIcon className="size-4 mr-1" />
                               Change
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                generateThumbnail.mutate({ id: videoId })
+                              }
+                            >
                               <SparklesIcon className="size-4 mr-1" />
                               AI-generated
                             </DropdownMenuItem>
