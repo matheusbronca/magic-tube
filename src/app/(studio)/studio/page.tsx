@@ -1,6 +1,6 @@
 import { trpc } from "@/trpc/server";
 import { prefetch, HydrateClient } from "@/trpc/server";
-import { StudioView } from "@/modules/studio/ui/view/studio-view";
+import { StudioView } from "@/modules/studio/ui/views/studio-view";
 import { DEFAULT_LIMIT } from "@/constants";
 
 const Page = async () => {

@@ -9,10 +9,12 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { toast } from "sonner";
 import { ResponsiveModal } from "@/components/responsive-modal";
 import { StudioUploader } from "./studio-uploader";
+import { useRouter } from "next/navigation";
 
 export const StudioUploadModal = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const createVideo = useMutation(
     trpc.videos.create.mutationOptions({
@@ -28,7 +30,11 @@ export const StudioUploadModal = () => {
     }),
   );
 
-  console.log(createVideo.data);
+  const onSuccess = () => {
+    if (!createVideo.data?.video.id) return;
+    createVideo.reset();
+    router.push(`/studio/videos/${createVideo.data.video.id}`);
+  };
 
   return (
     <>
@@ -40,7 +46,7 @@ export const StudioUploadModal = () => {
         {createVideo.data?.url ? (
           <StudioUploader
             endpoint={createVideo.data.url}
-            onSuccess={() => {}}
+            onSuccess={onSuccess}
           />
         ) : (
           <Loader2Icon />
