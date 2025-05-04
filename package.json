@@ -46,6 +46,7 @@
     "@trpc/client": "^11.1.0",
     "@trpc/server": "^11.1.0",
     "@trpc/tanstack-react-query": "^11.1.0",
+    "@uploadthing/react": "^7.3.0",
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.8",
     "class-variance-authority": "^0.7.1",
@@ -75,6 +76,7 @@
     "svix": "^1.64.1",
     "tailwind-merge": "^3.2.0",
     "tw-animate-css": "^1.2.5",
+    "uploadthing": "^7.6.0",
     "vaul": "^1.1.2",
     "zod": "^3.24.3"
   },
