@@ -8,6 +8,14 @@
 @source "../../node_modules/@uploadthing/react/dist";
 /* UPLOADTHING CONFIG */
 
+/* MUX CONFIG */
+mux-player {
+  --media-object-fit: cover;
+  --media-object-position: center;
+}
+
+/* MUX CONFIG */
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
