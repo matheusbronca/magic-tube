@@ -28,24 +28,35 @@ export const { POST } = serve(async (context) => {
     return existingVideo;
   });
 
-  const { body } = await context.call<{ data: { url: string }[] }>(
+  const { body } = await context.call<{ data: { imageURL: string }[] }>(
     "generate-thumbnail",
     {
-      url: "https://api.openai.com/v1/images/generations",
+      url: "https://api.runware.ai/v1",
       method: "POST",
-      body: {
-        prompt,
-        n: 1,
-        model: "dall-e-3",
-        size: "1792x1024",
-      },
+      body: [
+        {
+          taskUUID: video.id,
+          taskType: "imageInference",
+          width: 1152,
+          height: 640,
+          numberResults: 1,
+          outputFormat: "JPEG",
+          steps: 4,
+          CFGScale: 1,
+          scheduler: "FlowMatchEulerDiscreteScheduler",
+          outputType: ["URL"],
+          includeCost: false,
+          positivePrompt: prompt,
+          model: "runware:100@1",
+        },
+      ],
       headers: {
-        authorization: `Bearer ${process.env.OPENAI_API_KEY!}`,
+        authorization: `Bearer ${process.env.RUNWARE_API_KEY!}`,
       },
     },
   );
 
-  const tempThumbnailUrl = body.data?.[0].url;
+  const tempThumbnailUrl = body.data?.[0].imageURL;
 
   if (!tempThumbnailUrl) {
     throw new Error("Bad request");

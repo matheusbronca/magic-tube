@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "api.runware.ai",
+      },
+      {
+        protocol: "https",
+        hostname: "runware.ai",
+      },
+      {
+        protocol: "https",
         hostname: "utfs.io",
       },
       {
