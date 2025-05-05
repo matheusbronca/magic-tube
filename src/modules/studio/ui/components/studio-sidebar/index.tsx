@@ -31,7 +31,7 @@ export const StudioSidebar = () => {
               >
                 <Link href="/studio">
                   <VideoIcon className="size-5" />
-                  <span className="text-sm">Videos</span>
+                  <span className="text-sm">Your content</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

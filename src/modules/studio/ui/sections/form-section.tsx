@@ -67,6 +67,8 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { ThumbnailGenerateModal } from "../components/thumbnail-generate-modal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FormSectionProps {
   videoId: string;
@@ -78,6 +80,8 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
   const router = useRouter();
 
   const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false);
+  const [thumbnailGenerateModalOpen, setThumbnailGenerateModalOpen] =
+    useState(false);
 
   const { data } = useSuspenseQuery(
     trpc.studio.getOne.queryOptions({ id: videoId }),
@@ -124,20 +128,6 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
           trpc.studio.getMany.queryFilter({ limit: DEFAULT_LIMIT }),
         );
         toast.success("Thumbnail restored");
-      },
-      onError: () => {
-        toast.error("Something went wrong");
-      },
-    }),
-  );
-
-  const generateThumbnail = useMutation(
-    trpc.videos.generateThumbnail.mutationOptions({
-      onSuccess: () => {
-        toast.success("Background job started", {
-          description: "This may take some time",
-          descriptionClassName: "!text-muted-foreground",
-        });
       },
       onError: () => {
         toast.error("Something went wrong");
@@ -195,6 +185,11 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
 
   return (
     <>
+      <ThumbnailGenerateModal
+        open={thumbnailGenerateModalOpen}
+        onOpenChange={setThumbnailGenerateModalOpen}
+        videoId={videoId}
+      />
       <ThumbnailUploadModal
         open={thumbnailModalOpen}
         onOpenChange={setThumbnailModalOpen}
@@ -212,7 +207,11 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
             <div className="flex items-center gap-x-2">
               <Button
                 type="submit"
-                disabled={update.isPending || form.formState.isSubmitting}
+                disabled={
+                  update.isPending ||
+                  form.formState.isSubmitting ||
+                  !form.formState.isDirty
+                }
               >
                 Save
               </Button>
@@ -368,7 +367,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                generateThumbnail.mutate({ id: videoId })
+                                setThumbnailGenerateModalOpen(true)
                               }
                             >
                               <SparklesIcon className="size-4 mr-1" />
@@ -389,8 +388,6 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                   </FormItem>
                 )}
               />
-              {/* TODO: Add thumbnail field here */}
-
               <FormField
                 control={form.control}
                 name="categoryId"
@@ -401,7 +398,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                       onValueChange={field.onChange}
                       defaultValue={field.value ?? undefined}
                     >
-                      <FormControl>
+                      <FormControl className="w-full">
                         <SelectTrigger>
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
@@ -529,5 +526,58 @@ export const FormSection = ({ videoId }: FormSectionProps) => {
 };
 
 const FormSectionSkeleton = () => {
-  return <p>Loading...</p>;
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-32" />
+          <Skeleton className="h-7 w-40" />
+        </div>
+        <Skeleton className="h-9 w-24" />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="space-y-8 lg:col-span-3">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-16" />
+            <Skeleton className="h-5 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-[64px] w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-[84px] w-[153px]" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-y-8 lg:col-span-2">
+          <div className="flex flex-col gap-4 bg-[#F9F9F9] rounded-xl overflow-hidden">
+            <Skeleton className="aspect-video" />
+            <div className="p-4 space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-5 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-5 w-32" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-5 w-32" />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
