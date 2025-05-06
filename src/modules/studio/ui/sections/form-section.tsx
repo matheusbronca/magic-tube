@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { ErrorBoundary } from "react-error-boundary";
-import { Suspense, useState } from "react";
+import { Suspense, useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -79,13 +79,22 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
+  const [videoStatus, setVideoStatus] = useState<string | null>("waiting");
   const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false);
   const [thumbnailGenerateModalOpen, setThumbnailGenerateModalOpen] =
     useState(false);
 
   const { data } = useSuspenseQuery(
-    trpc.studio.getOne.queryOptions({ id: videoId }),
+    trpc.studio.getOne.queryOptions(
+      { id: videoId },
+      { refetchInterval: videoStatus !== "ready" ? 2500 : undefined },
+    ),
   );
+
+  useLayoutEffect(() => {
+    setVideoStatus(data.muxStatus);
+  }, [data]);
+
   const { data: categories } = useSuspenseQuery(
     trpc.categories.getMany.queryOptions(),
   );

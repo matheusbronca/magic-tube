@@ -127,7 +127,7 @@ export const VideosSectionSuspense = () => {
                     router.prefetch(`/studio/videos/${video.id}`)
                   }
                 >
-                  <TableCell className="pl-6">
+                  <TableCell className="pl-6 md:w-[45%]">
                     <div className="flex items-center gap-4">
                       <div className="relative aspect-video w-36 shrink-0">
                         <VideoThumbnail
@@ -141,7 +141,7 @@ export const VideosSectionSuspense = () => {
                         <span className="text-sm line-clamp-1">
                           {video.title}
                         </span>
-                        <span className="text-xs text-muted-foreground line-clamp-1">
+                        <span className="text-xs text-muted-foreground line-clamp-2 text-wrap">
                           {video.description || "No description"}
                         </span>
                       </div>
