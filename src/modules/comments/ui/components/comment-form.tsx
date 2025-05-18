@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DEFAULT_LIMIT } from "@/constants";
 
 interface CommentFormProps {
   videoId: string;
@@ -29,7 +30,7 @@ export const CommentForm = ({ videoId, onSuccess }: CommentFormProps) => {
   const create = useMutation(
     trpc.comments.create.mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries(trpc.comments.getMany.queryFilter({ videoId }));
+        queryClient.invalidateQueries(trpc.comments.getMany.infiniteQueryFilter({ videoId, limit: DEFAULT_LIMIT }));
         form.reset();
         toast.success("Comment added");
         onSuccess?.();
