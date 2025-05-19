@@ -129,6 +129,21 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     }),
   );
 
+  const revalidate = useMutation(
+    trpc.videos.revalidate.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(trpc.studio.getMany.queryFilter());
+        queryClient.invalidateQueries(
+          trpc.studio.getOne.queryFilter({ id: videoId }),
+        );
+        toast.success("Video revalidated");
+      },
+      onError: () => {
+        toast.error("Something went wrong");
+      },
+    }),
+  );
+
   const restoreThumbnail = useMutation(
     trpc.videos.restoreThumbnail.mutationOptions({
       onSuccess: async () => {
@@ -231,6 +246,12 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => revalidate.mutate({ id: videoId })}
+                  >
+                    <RotateCcwIcon className="size-4 mr-2" />
+                    Revalidate
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => remove.mutate({ id: videoId })}
                   >
