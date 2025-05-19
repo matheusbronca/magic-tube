@@ -196,8 +196,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     await update.mutateAsync(data);
   };
 
-  // TODO: Change if deplying outside of vercel;
-  const fullUrl = `${APP_URL || "http://localhost:3000"}/videos/${videoId}`;
+  const fullUrl = `${APP_URL}/videos/${videoId}`;
   const [isCopied, setIsCopied] = useState(false);
 
   const onCopy = async () => {
