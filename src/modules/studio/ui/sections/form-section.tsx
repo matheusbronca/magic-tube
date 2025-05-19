@@ -52,7 +52,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { videoUpdateSchema } from "@/db/schema";
 import { toast } from "sonner";
-import { DEFAULT_LIMIT } from "@/constants";
+import { APP_URL, DEFAULT_LIMIT } from "@/constants";
 import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
 import Link from "next/link";
 import { snakeCaseToTitle } from "@/lib/utils";
@@ -197,7 +197,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
   };
 
   // TODO: Change if deplying outside of vercel;
-  const fullUrl = `${process.env.VERCEL_URL || "http://localhost:3000"}/videos/${videoId}`;
+  const fullUrl = `${APP_URL || "http://localhost:3000"}/videos/${videoId}`;
   const [isCopied, setIsCopied] = useState(false);
 
   const onCopy = async () => {

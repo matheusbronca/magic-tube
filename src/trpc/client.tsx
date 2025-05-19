@@ -6,9 +6,10 @@ import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import { useState } from "react";
 import { makeQueryClient } from "./query-client";
-import superjson from 'superjson'
+import superjson from "superjson";
 
 import type { AppRouter } from "./routers/_app";
+import { APP_URL } from "@/constants";
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 let browserQueryClient: QueryClient;
 function getQueryClient() {
@@ -27,7 +28,7 @@ function getUrl() {
   const base = (() => {
     if (typeof window !== "undefined") return "";
     // TODO: Modify for outside vercel deploy
-    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+    if (APP_URL) return `https://${APP_URL}`;
     return "http://localhost:3000";
   })();
   return `${base}/api/trpc`;
@@ -49,10 +50,10 @@ export function TRPCReactProvider(
           transformer: superjson,
           url: getUrl(),
           async headers() {
-              const headers = new Headers();
-              headers.set("x-trpc-source", "nextjs-react");
-              return headers;
-          }
+            const headers = new Headers();
+            headers.set("x-trpc-source", "nextjs-react");
+            return headers;
+          },
         }),
       ],
     }),
