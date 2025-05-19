@@ -20,6 +20,13 @@ const Page = async ({ params }: PageProps) => {
     }),
   );
 
+  void prefetch(
+    trpc.suggestions.getMany.infiniteQueryOptions({
+      videoId,
+      limit: DEFAULT_LIMIT,
+    }),
+  );
+
   return (
     <HydrateClient>
       <VideoView videoId={videoId} />
