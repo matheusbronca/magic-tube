@@ -14,6 +14,8 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
+  ChevronDownIcon,
+  ChevronUpIcon,
   MessageSquareIcon,
   MoreVerticalIcon,
   ThumbsDownIcon,
@@ -21,19 +23,29 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useAuth, useClerk } from "@clerk/nextjs";
-import { DEFAULT_LIMIT } from "@/constants";
+// import { DEFAULT_LIMIT } from "@/constants";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { CommentForm } from "./comment-form";
+import { CommentReplies } from "./comment-replies";
 
 interface CommentItemProps {
   comment: CommentsGetManyOutput["items"][number];
+  variant?: "reply" | "comment";
 }
 
-export const CommentItem = ({ comment }: CommentItemProps) => {
+export const CommentItem = ({
+  comment,
+  variant = "comment",
+}: CommentItemProps) => {
   const clerk = useClerk();
   const { userId } = useAuth();
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
+  const [isReplyOpen, setIsReplyOpen] = useState(false);
+  const [isRepliesOpen, setIsRepliesOpen] = useState(false);
 
   const remove = useMutation(
     trpc.comments.remove.mutationOptions({
@@ -102,7 +114,7 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
       <div className="flex gap-4">
         <Link href={`/users/${comment.userId}`}>
           <UserAvatar
-            size="lg"
+            size={variant === "comment" ? "lg" : "sm"}
             imageUrl={comment.user.imageUrl}
             name={comment.user.name}
           />
@@ -156,30 +168,85 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
                 {comment.dislikeCount}
               </span>
             </div>
+            {variant === "comment" && (
+              <Button
+                variant={"ghost"}
+                size="sm"
+                className="h-8"
+                onClick={() => {
+                  if (!userId) {
+                    toast.error("You must sign in to reply a comment");
+                    return clerk.openSignIn();
+                  }
+                  setIsReplyOpen(true);
+                }}
+              >
+                Reply
+              </Button>
+            )}
           </div>
         </div>
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-8">
-              <MoreVerticalIcon />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => {}}>
-              <MessageSquareIcon className="size-4" />
-              Reply
-            </DropdownMenuItem>
-            {comment.user.clerkId === userId && (
+        {comment.user.clerkId !== userId && variant === "reply" ? null : (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="size-8">
+                <MoreVerticalIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => remove.mutate({ id: comment.id })}
+                onClick={() => {
+                  if (!userId) {
+                    toast.error("You must sign in to reply a comment");
+                    return clerk.openSignIn();
+                  }
+                  setIsReplyOpen(true);
+                }}
               >
-                <Trash2Icon className="size-4" />
-                Delete
+                <MessageSquareIcon className="size-4" />
+                Reply
               </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+              {comment.user.clerkId === userId && (
+                <DropdownMenuItem
+                  onClick={() => remove.mutate({ id: comment.id })}
+                >
+                  <Trash2Icon className="size-4" />
+                  Delete
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
+      {isReplyOpen && variant === "comment" && (
+        <div className="mt-4 pl-14">
+          <CommentForm
+            variant="reply"
+            videoId={comment.videoId!}
+            parentId={comment.id}
+            onSuccess={() => {
+              setIsReplyOpen(false);
+              setIsRepliesOpen(true);
+            }}
+            onCancel={() => setIsReplyOpen(false)}
+          />
+        </div>
+      )}
+      {comment.replyCount > 0 && variant === "comment" && (
+        <div className="pl-14">
+          <Button
+            size="sm"
+            variant="tertiary"
+            onClick={() => setIsRepliesOpen((prev) => !prev)}
+          >
+            {isRepliesOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            {comment.replyCount} replies
+          </Button>
+        </div>
+      )}
+      {comment.replyCount > 0 && variant === "comment" && isRepliesOpen && (
+        <CommentReplies parentId={comment.id} videoId={comment.videoId} />
+      )}
     </div>
   );
 };
