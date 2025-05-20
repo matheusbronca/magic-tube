@@ -3,7 +3,6 @@ import { db } from "@/db";
 import { users, videoReactions, videos, videoViews } from "@/db/schema";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { eq, and, or, lt, desc, ilike, getTableColumns } from "drizzle-orm";
-import { TRPCError } from "@trpc/server";
 
 export const searchRouter = createTRPCRouter({
   getMany: baseProcedure
@@ -47,6 +46,7 @@ export const searchRouter = createTRPCRouter({
         .innerJoin(users, eq(videos.userId, users.id))
         .where(
           and(
+            eq(videos.visibility, "public"),
             ilike(videos.title, `%${query}%`),
             categoryId ? eq(videos.categoryId, categoryId) : undefined,
             cursor

@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import { useClerk } from "@clerk/nextjs";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
+import { DEFAULT_LIMIT } from "@/constants";
 
 interface UseSusbscriptionProps {
   userId: string;
@@ -22,7 +23,11 @@ export const useSubscription = ({
     trpc.subscriptions.create.mutationOptions({
       onSuccess: () => {
         toast.success("Subscribed");
-        // TODO: reinvalidate subscriptions.getMany, users.getOne
+        queryClient.invalidateQueries(
+          trpc.videos.getManySubscribed.infiniteQueryFilter({
+            limit: DEFAULT_LIMIT,
+          }),
+        );
 
         if (fromVideoId) {
           queryClient.invalidateQueries(
@@ -44,7 +49,11 @@ export const useSubscription = ({
     trpc.subscriptions.remove.mutationOptions({
       onSuccess: () => {
         toast.success("Unsubscribed");
-        // TODO: reinvalidate subscriptions.getMany, users.getOne
+        queryClient.invalidateQueries(
+          trpc.videos.getManySubscribed.infiniteQueryFilter({
+            limit: DEFAULT_LIMIT,
+          }),
+        );
 
         if (fromVideoId) {
           queryClient.invalidateQueries(
