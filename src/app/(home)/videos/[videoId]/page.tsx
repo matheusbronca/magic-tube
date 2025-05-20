@@ -14,7 +14,6 @@ const Page = async ({ params }: PageProps) => {
 
   void prefetch(trpc.videos.getOne.queryOptions({ id: videoId }));
 
-  // TODO: Don't forget to change to 'prefetchInfinite'
   void prefetch(
     trpc.comments.getMany.infiniteQueryOptions({
       videoId,

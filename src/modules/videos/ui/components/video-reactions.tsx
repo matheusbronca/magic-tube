@@ -8,6 +8,7 @@ import { useClerk } from "@clerk/nextjs";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { DEFAULT_LIMIT } from "@/constants";
 
 interface VideoReactionsProps {
   videoId: string;
@@ -31,7 +32,9 @@ export const VideoReactions = ({
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.videos.getOne.queryFilter({ id: videoId }),
-          // TODO: Invalidate "liked" playlists
+          trpc.playlists.getManyLiked.infiniteQueryFilter({
+            limit: DEFAULT_LIMIT,
+          }),
         );
       },
       onError: (error) => {
@@ -49,7 +52,9 @@ export const VideoReactions = ({
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.videos.getOne.queryFilter({ id: videoId }),
-          // TODO: Invalidate "liked" playlists
+          trpc.playlists.getManyLiked.infiniteQueryFilter({
+            limit: DEFAULT_LIMIT,
+          }),
         );
       },
       onError: (error) => {

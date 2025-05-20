@@ -291,18 +291,14 @@ export const videosRouter = createTRPCRouter({
             ),
           },
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
-          likeCount: db.$count(
-            videoReactions,
-            and(
-              eq(videoReactions.videoId, videos.id),
-              eq(videoReactions.type, "like"),
+          likeCount: db.$count(videoReactions, and( eq(videoReactions.videoId, videos.id), eq(videoReactions.type, "like"),
             ),
           ),
           dislikeCount: db.$count(
             videoReactions,
             and(
-              eq(viewerReactions.videoId, videos.id),
-              eq(viewerReactions.type, "dislike"),
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "dislike"),
             ),
           ),
           viewerReaction: viewerReactions.type,
