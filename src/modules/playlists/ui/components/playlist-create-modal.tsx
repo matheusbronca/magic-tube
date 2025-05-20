@@ -3,9 +3,8 @@ import { useTRPC } from "@/trpc/client";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,32 +14,32 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { DEFAULT_LIMIT } from "@/constants";
 
-interface ThumbnailGenerateModalProps {
-  videoId: string;
+interface PlaylistCreateModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 const formSchema = z.object({
-  prompt: z.string().min(10),
+  name: z.string().min(1),
 });
 
-export const ThumbnailGenerateModal = ({
-  videoId,
+export const PlaylistCreateModal = ({
   open,
   onOpenChange,
-}: ThumbnailGenerateModalProps) => {
+}: PlaylistCreateModalProps) => {
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
-  const generateThumbnail = useMutation(
-    trpc.videos.generateThumbnail.mutationOptions({
+  const create = useMutation(
+    trpc.playlists.create.mutationOptions({
       onSuccess: () => {
-        toast.success("Background job started", {
-          description: "This may take some time",
-          descriptionClassName: "!text-muted-foreground",
-        });
-
+        queryClient.invalidateQueries(
+          trpc.playlists.getMany.infiniteQueryFilter({ limit: DEFAULT_LIMIT }),
+        );
+        toast.success("Playlist created");
         form.reset();
         onOpenChange(false);
       },
@@ -53,20 +52,17 @@ export const ThumbnailGenerateModal = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      prompt: "",
+      name: "",
     },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    generateThumbnail.mutate({
-      id: videoId,
-      prompt: values.prompt,
-    });
+    create.mutate(values);
   };
 
   return (
     <ResponsiveModal
-      title="Generate a thumbnail"
+      title="Create a playlist"
       open={open}
       onOpenChange={onOpenChange}
     >
@@ -77,19 +73,13 @@ export const ThumbnailGenerateModal = ({
         >
           <FormField
             control={form.control}
-            name="prompt"
+            name="name"
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>Prompt</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Textarea
-                      className="resize-none"
-                      cols={30}
-                      rows={5}
-                      placeholder="A description of wanted thumbnail"
-                      {...field}
-                    />
+                    <Input placeholder="My favorite videos" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -97,8 +87,8 @@ export const ThumbnailGenerateModal = ({
             }}
           />
           <div className="flex justify-end">
-            <Button type="submit" disabled={generateThumbnail.isPending}>
-              Generate
+            <Button type="submit" disabled={create.isPending}>
+              Create
             </Button>
           </div>
         </form>
