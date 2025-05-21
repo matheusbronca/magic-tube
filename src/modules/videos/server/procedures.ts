@@ -15,7 +15,16 @@ import {
   protectedProcedure,
 } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, getTableColumns, inArray, isNotNull, lt, or } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  getTableColumns,
+  inArray,
+  isNotNull,
+  lt,
+  or,
+} from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 
@@ -36,8 +45,14 @@ export const videosRouter = createTRPCRouter({
       const { id: userId } = ctx.user;
       const { cursor, limit } = input;
 
-      const viewerSubscriptions = db.$with("viewer_subscriptions").as(db.select(
-        { userId: subscriptions.creatorId }).from(subscriptions).where(eq(subscriptions.viewerId, userId)));
+      const viewerSubscriptions = db
+        .$with("viewer_subscriptions")
+        .as(
+          db
+            .select({ userId: subscriptions.creatorId })
+            .from(subscriptions)
+            .where(eq(subscriptions.viewerId, userId)),
+        );
 
       const data = await db
         .with(viewerSubscriptions)
@@ -62,7 +77,10 @@ export const videosRouter = createTRPCRouter({
         })
         .from(videos)
         .innerJoin(users, eq(videos.userId, users.id))
-        .innerJoin(viewerSubscriptions, eq(viewerSubscriptions.userId, users.id))
+        .innerJoin(
+          viewerSubscriptions,
+          eq(viewerSubscriptions.userId, users.id),
+        )
         .where(
           and(
             eq(videos.visibility, "public"),
@@ -112,8 +130,11 @@ export const videosRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { cursor, limit } = input;
 
-      const viewCountSubquery = db.$count(videoViews, eq(videoViews.videoId, videos.id))
-      
+      const viewCountSubquery = db.$count(
+        videoViews,
+        eq(videoViews.videoId, videos.id),
+      );
+
       const data = await db
         .select({
           ...getTableColumns(videos),
@@ -173,6 +194,7 @@ export const videosRouter = createTRPCRouter({
   getMany: baseProcedure
     .input(
       z.object({
+        userId: z.string().uuid().nullish(),
         categoryId: z.string().uuid().nullish(),
         cursor: z
           .object({
@@ -184,7 +206,7 @@ export const videosRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      const { cursor, limit, categoryId } = input;
+      const { cursor, limit, categoryId, userId } = input;
 
       const data = await db
         .select({
@@ -212,6 +234,7 @@ export const videosRouter = createTRPCRouter({
           and(
             eq(videos.visibility, "public"),
             categoryId ? eq(videos.categoryId, categoryId) : undefined,
+            userId ? eq(videos.userId, userId) : undefined,
             cursor
               ? or(
                   lt(videos.updatedAt, cursor.updatedAt),
@@ -291,7 +314,11 @@ export const videosRouter = createTRPCRouter({
             ),
           },
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
-          likeCount: db.$count(videoReactions, and( eq(videoReactions.videoId, videos.id), eq(videoReactions.type, "like"),
+          likeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "like"),
             ),
           ),
           dislikeCount: db.$count(
