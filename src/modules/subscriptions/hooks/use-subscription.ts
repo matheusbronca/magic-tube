@@ -24,6 +24,9 @@ export const useSubscription = ({
       onSuccess: () => {
         toast.success("Subscribed");
         queryClient.invalidateQueries(
+          trpc.subscriptions.getMany.infiniteQueryFilter(),
+        );
+        queryClient.invalidateQueries(
           trpc.videos.getManySubscribed.infiniteQueryFilter({
             limit: DEFAULT_LIMIT,
           }),
@@ -53,6 +56,11 @@ export const useSubscription = ({
     trpc.subscriptions.remove.mutationOptions({
       onSuccess: () => {
         toast.success("Unsubscribed");
+
+        queryClient.invalidateQueries(
+          trpc.subscriptions.getMany.infiniteQueryFilter(),
+        );
+
         queryClient.invalidateQueries(
           trpc.videos.getManySubscribed.infiniteQueryFilter({
             limit: DEFAULT_LIMIT,
