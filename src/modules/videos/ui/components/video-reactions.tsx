@@ -36,6 +36,14 @@ export const VideoReactions = ({
             limit: DEFAULT_LIMIT,
           }),
         );
+        queryClient.invalidateQueries(
+          trpc.playlists.getManyLiked.infiniteQueryFilter({
+            limit: DEFAULT_LIMIT,
+          }),
+        );
+        queryClient.invalidateQueries(
+          trpc.studio.getMany.infiniteQueryFilter(),
+        );
       },
       onError: (error) => {
         toast.error("Something went wrong");
@@ -52,9 +60,14 @@ export const VideoReactions = ({
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.videos.getOne.queryFilter({ id: videoId }),
+        );
+        queryClient.invalidateQueries(
           trpc.playlists.getManyLiked.infiniteQueryFilter({
             limit: DEFAULT_LIMIT,
           }),
+        );
+        queryClient.invalidateQueries(
+          trpc.studio.getMany.infiniteQueryFilter(),
         );
       },
       onError: (error) => {

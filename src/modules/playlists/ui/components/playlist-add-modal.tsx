@@ -46,7 +46,7 @@ export const PlaylistAddModal = ({
 
   const addVideoToPlaylist = useMutation(
     trpc.playlists.addVideo.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Video added to playlist");
         queryClient.invalidateQueries(
           trpc.playlists.getMany.infiniteQueryFilter(),
@@ -54,8 +54,14 @@ export const PlaylistAddModal = ({
         queryClient.invalidateQueries(
           trpc.playlists.getManyForVideo.infiniteQueryFilter({ videoId }),
         );
-
-        // TODO: Invalidate playlists.getOne
+        queryClient.invalidateQueries(
+          trpc.playlists.getOne.queryFilter({ id: data.playlistId }),
+        );
+        queryClient.invalidateQueries(
+          trpc.playlists.getManyVideos.infiniteQueryFilter({
+            playlistId: data.playlistId,
+          }),
+        );
       },
       onError: () => {
         toast.error("Something went wrong");
@@ -64,13 +70,21 @@ export const PlaylistAddModal = ({
   );
   const removeVideoFromPlaylist = useMutation(
     trpc.playlists.removeVideo.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Video removed from playlist");
         queryClient.invalidateQueries(
           trpc.playlists.getMany.infiniteQueryFilter(),
         );
         queryClient.invalidateQueries(
           trpc.playlists.getManyForVideo.infiniteQueryFilter({ videoId }),
+        );
+        queryClient.invalidateQueries(
+          trpc.playlists.getOne.queryFilter({ id: data.playlistId }),
+        );
+        queryClient.invalidateQueries(
+          trpc.playlists.getManyVideos.infiniteQueryFilter({
+            playlistId: data.playlistId,
+          }),
         );
       },
       onError: () => {

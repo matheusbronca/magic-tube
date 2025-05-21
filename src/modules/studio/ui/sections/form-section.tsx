@@ -55,7 +55,7 @@ import { toast } from "sonner";
 import { APP_URL, DEFAULT_LIMIT } from "@/constants";
 import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
 import Link from "next/link";
-import { snakeCaseToTitle } from "@/lib/utils";
+import { cn, snakeCaseToTitle } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -187,6 +187,8 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     }),
   );
 
+  const isDisabled = generateDescription.isPending || !data.muxTrackId;
+
   const form = useForm<z.infer<typeof videoUpdateSchema>>({
     defaultValues: data,
     resolver: zodResolver(videoUpdateSchema),
@@ -278,13 +280,15 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 size="icon"
                                 variant="outline"
                                 type="button"
-                                className="rounded-full size-6 [&_svg]:size-3"
-                                disabled={
-                                  generateTitle.isPending || !data.muxTrackId
-                                }
-                                onClick={() =>
-                                  generateTitle.mutate({ id: videoId })
-                                }
+                                className={cn(
+                                  "rounded-full size-6 [&_svg]:size-3",
+                                  isDisabled && "!pointer-events-auto",
+                                )}
+                                disabled={isDisabled}
+                                onClick={() => {
+                                  if (isDisabled) return;
+                                  generateTitle.mutate({ id: videoId });
+                                }}
                               >
                                 {generateTitle.isPending ? (
                                   <Loader2Icon className="animate-spin" />
@@ -294,7 +298,11 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent align="center" side="right">
-                              <p>Generate a title using AI</p>
+                              <p>
+                                {isDisabled
+                                  ? "AI generation is disabled on videos without audio"
+                                  : "Generate a title using AI"}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -325,14 +333,15 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 size="icon"
                                 variant="outline"
                                 type="button"
-                                className="rounded-full size-6 [&_svg]:size-3"
-                                disabled={
-                                  generateDescription.isPending ||
-                                  !data.muxTrackId
-                                }
-                                onClick={() =>
-                                  generateDescription.mutate({ id: videoId })
-                                }
+                                className={cn(
+                                  "rounded-full size-6 [&_svg]:size-3",
+                                  isDisabled && "!pointer-events-auto",
+                                )}
+                                disabled={isDisabled}
+                                onClick={() => {
+                                  if (isDisabled) return;
+                                  generateDescription.mutate({ id: videoId });
+                                }}
                               >
                                 {generateDescription.isPending ? (
                                   <Loader2Icon className="animate-spin" />
@@ -342,7 +351,11 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent align="center" side="right">
-                              <p>Generate a description using AI</p>
+                              <p>
+                                {isDisabled
+                                  ? "AI generation is disabled on videos without audio"
+                                  : "Generate a description using AI"}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
