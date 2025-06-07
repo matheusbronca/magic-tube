@@ -37,15 +37,22 @@ import {
 } from "@/components/ui/select";
 
 import {
+  CircleCheck,
+  CircleSlash,
+  CircleXIcon,
   CopyCheckIcon,
   CopyIcon,
   Globe2Icon,
   ImagePlusIcon,
+  InfoIcon,
+  LinkIcon,
   Loader2Icon,
   LockIcon,
   MoreVerticalIcon,
+  RefreshCw,
   RotateCcwIcon,
   SparklesIcon,
+  SubtitlesIcon,
   TrashIcon,
 } from "lucide-react";
 
@@ -72,10 +79,43 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AiThumbnailPlaceholder } from "../components/ai-thumbnail-placeholder";
 import { AiTextPlaceholder } from "../components/ai-text-placeholder";
 import { AnimatePresence, motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 interface FormSectionProps {
   videoId: string;
 }
+
+type VideoStatusKind =
+  | "Preparing"
+  | "Processing"
+  | "Ready"
+  | "Errored"
+  | "Error";
+
+type SubtitlesStatusKind = VideoStatusKind | "Deleted" | "No Subtitles";
+
+const VideoStatusIcon = ({ videoStatus }: { videoStatus: VideoStatusKind }) => {
+  if (videoStatus === "Preparing")
+    return <Loader2Icon className="animate-spin" />;
+  if (videoStatus === "Processing")
+    return <RefreshCw className="animate-spin" />;
+  if (videoStatus === "Ready") return <CircleCheck />;
+  return <CircleXIcon />;
+};
+
+const SubtitlesStatusIcon = ({
+  subtitlesStatus,
+}: {
+  subtitlesStatus: SubtitlesStatusKind;
+}) => {
+  if (subtitlesStatus === "Preparing")
+    return <Loader2Icon className="animate-spin" />;
+  if (subtitlesStatus === "Processing")
+    return <RefreshCw className="animate-spin" />;
+  if (subtitlesStatus === "No Subtitles") return <CircleSlash />;
+  if (subtitlesStatus === "Ready") return <CircleCheck />;
+  return <CircleXIcon />;
+};
 
 const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
   const trpc = useTRPC();
@@ -111,6 +151,12 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
       },
     ),
   );
+
+  const videoStatusLabel =
+    snakeCaseToTitle(data.muxStatus as string) || "Preparing";
+
+  const subtitlesStatusLabel =
+    snakeCaseToTitle(data.muxTrackStatus as string) || "No Subtitles";
 
   useLayoutEffect(() => {
     setVideoStatus(data.muxStatus);
@@ -617,7 +663,8 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                 <div className="p-4 flex flex-col gap-y-6">
                   <div className="flex justify-between items-center gap-x-2">
                     <div className="flex flex-col gap-y-1">
-                      <p className="text-muted-foreground text-xs">
+                      <p className="flex items-center gap-1 text-muted-foreground text-xs">
+                        <LinkIcon className="size-3" />
                         Video link
                       </p>
                       <div className="flex items-center gap-x-2">
@@ -642,25 +689,83 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
 
                   <div className="flex justify-between items-center">
                     <div className="flex flex-col gap-y-1">
-                      <p className="text-xs text-muted-foreground">
-                        Video status
+                      <p className="flex gap-1 items-center text-xs text-muted-foreground">
+                        <InfoIcon className="size-3" />
+                        Video Status
                       </p>
-                      <p>
-                        {snakeCaseToTitle(data.muxStatus as string) ||
-                          "Preparing"}
-                      </p>
+                      <div className="flex gap-4 items-center">
+                        <Badge
+                          asChild
+                          variant={
+                            data.muxStatus !== "ready" ? "outline" : "default"
+                          }
+                          className={cn(
+                            "rounded-full",
+                            data.muxStatus === "ready" && "bg-blue-500",
+                            data.muxStatus === "processing" &&
+                              "text-yellow-600 border-yellow-600",
+                            (data.muxStatus === "errored" ||
+                              data.muxStatus === "error") &&
+                              "text-red-400 border-red-400",
+                          )}
+                        >
+                          <p className="flex gap-1 items-center">
+                            <VideoStatusIcon
+                              videoStatus={videoStatusLabel as VideoStatusKind}
+                            />
+                            {videoStatusLabel}
+                          </p>
+                        </Badge>
+                        {(data.muxStatus === "error" ||
+                          data.muxStatus === "errored") && (
+                          <span className="text-sm">
+                            Please, revalidate the video.
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex justify-between items-center">
                     <div className="flex flex-col gap-y-1">
-                      <p className="text-xs text-muted-foreground">
+                      <p className="flex gap-1 items-center text-xs text-muted-foreground">
+                        <SubtitlesIcon className="size-3" />
                         Subtitles status
                       </p>
-                      <p>
-                        {snakeCaseToTitle(data.muxTrackStatus as string) ||
-                          "No Subtitles"}
-                      </p>
+                      <div className="flex gap-4 items-center">
+                        <Badge
+                          asChild
+                          variant={
+                            data.muxTrackStatus !== "ready"
+                              ? "outline"
+                              : "default"
+                          }
+                          className={cn(
+                            "rounded-full",
+                            data.muxTrackStatus === "ready" && "bg-blue-500",
+                            data.muxTrackStatus === "processing" &&
+                              "text-yellow-600 border-yellow-600",
+                            (data.muxTrackStatus === "errored" ||
+                              data.muxTrackStatus === "error") &&
+                              "text-red-400 border-red-400",
+                          )}
+                        >
+                          <p className="flex gap-1 items-center">
+                            <SubtitlesStatusIcon
+                              subtitlesStatus={
+                                subtitlesStatusLabel as SubtitlesStatusKind
+                              }
+                            />
+                            {subtitlesStatusLabel}
+                          </p>
+                        </Badge>
+                        {(data.muxTrackStatus === "error" ||
+                          data.muxTrackStatus === "errored") && (
+                          <span className="text-sm">
+                            Please, revalidate the video.
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
