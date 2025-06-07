@@ -128,6 +128,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     if (isAiDescriptionBeingGenerated !== data.description)
       setIsAiDescriptionBeingGenerated(undefined);
     if (
+      isAiThumbnailBeingGenerated !== undefined &&
       isAiThumbnailBeingGenerated !== data.thumbnailUrl &&
       !!data.thumbnailUrl
     ) {
