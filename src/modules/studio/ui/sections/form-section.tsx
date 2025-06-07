@@ -601,7 +601,10 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                       >
-                        <AiThumbnailPlaceholder size="lg" />
+                        <AiThumbnailPlaceholder
+                          size="lg"
+                          className="!rounded-b-none"
+                        />
                       </motion.div>
                     )}
                   </AnimatePresence>

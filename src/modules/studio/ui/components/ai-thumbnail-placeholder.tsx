@@ -3,20 +3,29 @@ import { cn } from "@/lib/utils";
 
 export const AiThumbnailPlaceholder = ({
   size = "sm",
+  className,
 }: {
   size: "sm" | "lg";
+  className?: string;
 }) => {
   return (
     <div
       className={cn(
         "size-full relative rounded-sm ring-[3px] ring-blue-100 cursor-not-allowed pointer-events-none select-none",
+        className,
       )}
     >
-      <div className="absolute top-0 left-1/2 rainbow size-full opacity-15 -translate-x-1/2 blur-sm" />
+      <div
+        className={cn(
+          "absolute top-0 left-1/2 rainbow size-full opacity-15 -translate-x-1/2 blur-sm",
+          className,
+        )}
+      />
       <div
         className={cn(
           "absolute top-0 left-0 rainbow size-full opacity-50 rounded-sm",
           "opacity-80",
+          className,
         )}
       />
       <div
