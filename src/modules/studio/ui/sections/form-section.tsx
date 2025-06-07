@@ -51,6 +51,7 @@ import {
   MoreVerticalIcon,
   RefreshCw,
   RotateCcwIcon,
+  SaveIcon,
   SparklesIcon,
   SubtitlesIcon,
   TrashIcon,
@@ -356,6 +357,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                   !form.formState.isDirty
                 }
               >
+                <SaveIcon className="size-4" />
                 Save
               </Button>
               <DropdownMenu modal={false}>
