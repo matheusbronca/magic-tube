@@ -45,6 +45,7 @@ export const MainSection = () => {
                 tooltip={item.title}
                 asChild
                 isActive={pathname === item.url}
+                className="rounded-full px-4"
                 onClick={(e) => {
                   if (!isSignedIn && item.auth) {
                     e.preventDefault();
@@ -52,7 +53,11 @@ export const MainSection = () => {
                   }
                 }}
               >
-                <Link href={item.url} className="flex items-center gap-4">
+                <Link
+                  prefetch
+                  href={item.url}
+                  className="flex items-center gap-4"
+                >
                   <item.icon />
                   <span className="text-sm">{item.title}</span>
                 </Link>

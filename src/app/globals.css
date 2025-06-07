@@ -78,6 +78,57 @@ mux-player {
       height: 0;
     }
   }
+
+  --animate-wiggle: wiggle 2s cubic-bezier(0.68, -0.6, 0.32, 1.6) infinite;
+
+  @keyframes wiggle {
+
+    0%,
+    100% {
+      transform: rotate(-45deg) scale(0);
+    }
+
+    50% {
+      transform: rotate(45deg) scale(1);
+    }
+  }
+
+  --animate-scale-bouncing: scale-bouncing 2s ease-out infinite;
+
+  @keyframes scale-bouncing {
+
+    0%,
+    100% {
+      transform: scale(0.8);
+    }
+
+    50% {
+      transform: scale(1.1) rotate(-8deg);
+    }
+  }
+
+  --animate-ai-text-to-actual-text: ai-text 2s ease-out forwards;
+  --animate-shimmer-translation: shimmer-translation 2.5s ease-out forwards infinite;
+
+  @keyframes ai-text {
+    0% {
+      color: var(--color-blue-400);
+    }
+
+    100% {
+      color: var(--color-foreground);
+    }
+  }
+
+  @keyframes shimmer-translation {
+    from {
+      transform: translateX(-35%);
+    }
+
+    to {
+      transform: translateX(35%);
+    }
+  }
 }
 
 :root {
@@ -156,5 +207,16 @@ mux-player {
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+.rainbow {
+  background: repeating-linear-gradient(90deg in hsl longer hue, red 0 50%) 0/200%;
+  animation: rainbow-animation 3s linear infinite;
+}
+
+@keyframes rainbow-animation {
+  to {
+    background-position: 100%;
   }
 }

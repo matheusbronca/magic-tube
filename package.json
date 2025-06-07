@@ -1,5 +1,5 @@
 {
-  "name": "new-tube",
+  "name": "magic-tube",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -59,6 +59,7 @@
     "drizzle-orm": "^0.42.0",
     "drizzle-zod": "^0.7.1",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.12.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.488.0",
     "next": "15.3.0",

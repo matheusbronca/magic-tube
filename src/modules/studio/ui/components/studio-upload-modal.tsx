@@ -55,6 +55,7 @@ export const StudioUploadModal = () => {
       <Button
         variant="secondary"
         onClick={() => createVideo.mutate()}
+        className="rounded-full !pr-5"
         disabled={createVideo.isPending}
       >
         {createVideo.isPending ? (

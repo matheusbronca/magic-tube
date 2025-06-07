@@ -69,6 +69,9 @@ import {
 } from "@/components/ui/tooltip";
 import { ThumbnailGenerateModal } from "../components/thumbnail-generate-modal";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AiThumbnailPlaceholder } from "../components/ai-thumbnail-placeholder";
+import { AiTextPlaceholder } from "../components/ai-text-placeholder";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface FormSectionProps {
   videoId: string;
@@ -84,16 +87,66 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
   const [thumbnailGenerateModalOpen, setThumbnailGenerateModalOpen] =
     useState(false);
 
+  const [isAiThumbnailBeingGenerated, setIsAiThumbnailBeingGenerated] =
+    useState<string | undefined>();
+  const [isAiThumbnailLoaded, setIsAiThumbnailLoaded] = useState(true);
+  const [isAiTitleBeingGenerated, setIsAiTitleBeingGenerated] = useState<
+    string | undefined
+  >();
+  const [isAiDescriptionBeingGenerated, setIsAiDescriptionBeingGenerated] =
+    useState<string | undefined>();
+
+  const isAiGenerating =
+    !!isAiTitleBeingGenerated ||
+    !!isAiDescriptionBeingGenerated ||
+    !!isAiThumbnailBeingGenerated;
+
   const { data } = useSuspenseQuery(
     trpc.studio.getOne.queryOptions(
       { id: videoId },
-      { refetchInterval: videoStatus !== "ready" ? 2500 : undefined },
+      {
+        refetchInterval: () => {
+          return videoStatus !== "ready" || isAiGenerating ? 2500 : undefined;
+        },
+      },
     ),
   );
 
   useLayoutEffect(() => {
     setVideoStatus(data.muxStatus);
   }, [data]);
+
+  useLayoutEffect(() => {
+    if (!isAiGenerating) return;
+    queryClient.invalidateQueries(trpc.studio.getMany.queryFilter());
+    queryClient.invalidateQueries(
+      trpc.studio.getOne.queryFilter({ id: videoId }),
+    );
+
+    if (isAiTitleBeingGenerated !== data.title)
+      setIsAiTitleBeingGenerated(undefined);
+    if (isAiDescriptionBeingGenerated !== data.description)
+      setIsAiDescriptionBeingGenerated(undefined);
+    if (
+      isAiThumbnailBeingGenerated !== data.thumbnailUrl &&
+      !!data.thumbnailUrl
+    ) {
+      setIsAiThumbnailLoaded(false);
+      setIsAiThumbnailBeingGenerated(undefined);
+    }
+  }, [
+    data.title,
+    data.description,
+    data.thumbnailUrl,
+    queryClient,
+    trpc.studio.getMany,
+    trpc.studio.getOne,
+    videoId,
+    isAiGenerating,
+    isAiDescriptionBeingGenerated,
+    isAiTitleBeingGenerated,
+    isAiThumbnailBeingGenerated,
+  ]);
 
   const { data: categories } = useSuspenseQuery(
     trpc.categories.getMany.queryOptions(),
@@ -161,6 +214,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
 
   const generateTitle = useMutation(
     trpc.videos.generateTitle.mutationOptions({
+      onMutate: () => setIsAiTitleBeingGenerated(data.title ?? ""),
       onSuccess: () => {
         toast.success("Background job started", {
           description: "This may take some time",
@@ -175,6 +229,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
 
   const generateDescription = useMutation(
     trpc.videos.generateDescription.mutationOptions({
+      onMutate: () => setIsAiDescriptionBeingGenerated(data.description ?? ""),
       onSuccess: () => {
         toast.success("Background job started", {
           description: "This may take some time",
@@ -187,10 +242,19 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     }),
   );
 
-  const isDisabled = generateDescription.isPending || !data.muxTrackId;
+  // NOTE: isDisabled is a special flag that checks if a video has captions on it,
+  // if a video doesn't have it, title and description AI generation must be deactivated
+  const isDisabled = !data.muxTrackId;
+
+  // NOTE: Those flags are different, they're use to control UI states & animations
+  const isTitleGenerationTemporaryDisabled =
+    isAiTitleBeingGenerated || generateTitle.isPending;
+  const isDescriptionGenerationTemporaryDisabled =
+    isAiDescriptionBeingGenerated || generateDescription.isPending;
 
   const form = useForm<z.infer<typeof videoUpdateSchema>>({
     defaultValues: data,
+    values: data,
     resolver: zodResolver(videoUpdateSchema),
   });
 
@@ -208,11 +272,18 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const handleThumbnailLoad = () => {
+    setTimeout(() => setIsAiThumbnailLoaded(true), 500);
+  };
+
   return (
     <>
       <ThumbnailGenerateModal
         open={thumbnailGenerateModalOpen}
         onOpenChange={setThumbnailGenerateModalOpen}
+        setIsAiThumbnailBeingGenerated={() =>
+          setIsAiThumbnailBeingGenerated(data.thumbnailUrl ?? "")
+        }
         videoId={videoId}
       />
       <ThumbnailUploadModal
@@ -281,16 +352,25 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 variant="outline"
                                 type="button"
                                 className={cn(
-                                  "rounded-full size-6 [&_svg]:size-3",
-                                  isDisabled && "!pointer-events-auto",
+                                  "rounded-full size-6 [&_svg]:size-3  text-blue-500 hover:text-blue-600",
+                                  (isDisabled ||
+                                    !!isTitleGenerationTemporaryDisabled) &&
+                                    "!pointer-events-auto",
                                 )}
-                                disabled={isDisabled}
+                                disabled={
+                                  isDisabled ||
+                                  !!isTitleGenerationTemporaryDisabled
+                                }
                                 onClick={() => {
-                                  if (isDisabled) return;
+                                  if (
+                                    isDisabled ||
+                                    isTitleGenerationTemporaryDisabled
+                                  )
+                                    return;
                                   generateTitle.mutate({ id: videoId });
                                 }}
                               >
-                                {generateTitle.isPending ? (
+                                {isTitleGenerationTemporaryDisabled ? (
                                   <Loader2Icon className="animate-spin" />
                                 ) : (
                                   <SparklesIcon />
@@ -301,19 +381,32 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                               <p>
                                 {isDisabled
                                   ? "AI generation is disabled on videos without audio"
-                                  : "Generate a title using AI"}
+                                  : isTitleGenerationTemporaryDisabled
+                                    ? "The witchers are working on it, wait a minute"
+                                    : "Generate using AI"}
                               </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       </div>
                     </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Add a title to your video"
+                    <div className="relative size-full">
+                      <AiTextPlaceholder
+                        isGenerating={!!isAiTitleBeingGenerated}
+                        text={
+                          field.value ??
+                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+                        }
                       />
-                    </FormControl>
+                      <div className="size-full">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Add a title to your video"
+                          />
+                        </FormControl>
+                      </div>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -334,16 +427,25 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 variant="outline"
                                 type="button"
                                 className={cn(
-                                  "rounded-full size-6 [&_svg]:size-3",
-                                  isDisabled && "!pointer-events-auto",
+                                  "rounded-full size-6 [&_svg]:size-3 text-blue-500 hover:text-blue-600",
+                                  (isDisabled ||
+                                    !!isDescriptionGenerationTemporaryDisabled) &&
+                                    "!pointer-events-auto",
                                 )}
-                                disabled={isDisabled}
+                                disabled={
+                                  isDisabled ||
+                                  !!isDescriptionGenerationTemporaryDisabled
+                                }
                                 onClick={() => {
-                                  if (isDisabled) return;
+                                  if (
+                                    isDisabled ||
+                                    isDescriptionGenerationTemporaryDisabled
+                                  )
+                                    return;
                                   generateDescription.mutate({ id: videoId });
                                 }}
                               >
-                                {generateDescription.isPending ? (
+                                {isDescriptionGenerationTemporaryDisabled ? (
                                   <Loader2Icon className="animate-spin" />
                                 ) : (
                                   <SparklesIcon />
@@ -354,79 +456,107 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                               <p>
                                 {isDisabled
                                   ? "AI generation is disabled on videos without audio"
-                                  : "Generate a description using AI"}
+                                  : isDescriptionGenerationTemporaryDisabled
+                                    ? "The witchers are working on it, hold a minute"
+                                    : "Generate using AI"}
                               </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       </div>
                     </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        value={field.value ?? ""}
-                        rows={10}
-                        className="resize-none pr-10"
-                        placeholder="Add a description to your video"
+                    <div className="relative min-w-0">
+                      <AiTextPlaceholder
+                        isGenerating={!!isAiDescriptionBeingGenerated}
+                        text={
+                          field.value ??
+                          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur"
+                        }
                       />
-                    </FormControl>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          value={field.value ?? ""}
+                          rows={8}
+                          className="h-[180px] w-full resize-none pr-10"
+                          placeholder="Add a description to your video"
+                        />
+                      </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* TODO: Add thumbnail field here */}
               <FormField
                 name="thumbnailUrl"
                 control={form.control}
                 render={() => (
                   <FormItem>
                     <FormLabel>Thumbnail</FormLabel>
-                    <FormControl>
-                      <div className="p-0.5 border border-dashed border-neutral-400 relative h-[84px] w-[153px] group">
-                        <Image
-                          src={data.thumbnailUrl ?? THUMBNAIL_FALLBACK}
-                          className="object-cover"
-                          fill
-                          alt="Thumbnail"
-                        />
-                        <DropdownMenu modal={false}>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              type="button"
-                              size="icon"
-                              className="bg-black/50 hover:bg-black/50 absolute top-1 right-1 rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 duration-300 size-7"
-                            >
-                              <MoreVerticalIcon className="text-white" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem
-                              onClick={() => setThumbnailModalOpen(true)}
-                            >
-                              <ImagePlusIcon className="size-4 mr-1" />
-                              Change
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                setThumbnailGenerateModalOpen(true)
-                              }
-                            >
-                              <SparklesIcon className="size-4 mr-1" />
-                              AI-generated
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                restoreThumbnail.mutate({ id: videoId })
-                              }
-                            >
-                              <RotateCcwIcon className="size-4 mr-1" />
-                              Restore
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                    <div className="relative">
+                      <AnimatePresence>
+                        {(isAiThumbnailBeingGenerated ||
+                          !isAiThumbnailLoaded) && (
+                          <motion.div
+                            className="absolute left-0 p-0.5 border border-dashed border-blue-200 rounded-md  h-[84px] w-[153px] group z-10  cursor-not-allowed"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                          >
+                            <AiThumbnailPlaceholder size="sm" />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      <div>
+                        <FormControl>
+                          <div className="relative p-0.5 border border-dashed border-neutral-400 rounded-md h-[84px] w-[153px] overflow-hidden group">
+                            <Image
+                              onLoad={handleThumbnailLoad}
+                              src={data.thumbnailUrl ?? THUMBNAIL_FALLBACK}
+                              className="object-cover"
+                              fill
+                              alt="Thumbnail"
+                            />
+                            <DropdownMenu modal={false}>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  type="button"
+                                  size="icon"
+                                  className="bg-black/50 hover:bg-black/50 absolute top-1 right-1 rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 duration-300 size-7"
+                                >
+                                  <MoreVerticalIcon className="text-white" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem
+                                  onClick={() => setThumbnailModalOpen(true)}
+                                >
+                                  <ImagePlusIcon className="size-4 mr-1" />
+                                  Change
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    setThumbnailGenerateModalOpen(true)
+                                  }
+                                >
+                                  <SparklesIcon className="size-4 mr-1" />
+                                  AI-generated
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    restoreThumbnail.mutate({ id: videoId })
+                                  }
+                                >
+                                  <RotateCcwIcon className="size-4 mr-1" />
+                                  Restore
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </FormControl>
                       </div>
-                    </FormControl>
+                    </div>
                   </FormItem>
                 )}
               />
@@ -462,6 +592,19 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
             <div className="flex flex-col gap-y-8 lg:col-span-2">
               <div className="flex flex-col gap-4 bg-[#F9F9F9] rounded-xl overflow-hidden h-fit">
                 <div className="aspect-video overflow-hidden relative">
+                  <AnimatePresence>
+                    {(isAiThumbnailBeingGenerated || !isAiThumbnailLoaded) && (
+                      <motion.div
+                        className="w-full aspect-video cursor-not-allowed"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <AiThumbnailPlaceholder size="lg" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   <VideoPlayer
                     playbackId={data.muxPlaybackId}
                     thumbnailUrl={data.thumbnailUrl}
@@ -474,7 +617,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                         Video link
                       </p>
                       <div className="flex items-center gap-x-2">
-                        <Link href={`/videos/${data.id}`}>
+                        <Link prefetch href={`/videos/${data.id}`}>
                           <p className="line-clamp-1 text-sm text-blue-500">
                             {fullUrl}
                           </p>

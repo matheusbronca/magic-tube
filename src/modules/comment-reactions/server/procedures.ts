@@ -2,7 +2,6 @@ import { db } from "@/db";
 import { commentReactions } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { and, eq } from "drizzle-orm";
-import { timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 export const commentReactionsRouter = createTRPCRouter({

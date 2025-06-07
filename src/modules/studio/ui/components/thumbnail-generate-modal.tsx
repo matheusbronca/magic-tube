@@ -20,6 +20,7 @@ interface ThumbnailGenerateModalProps {
   videoId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  setIsAiThumbnailBeingGenerated: () => void;
 }
 
 const formSchema = z.object({
@@ -30,6 +31,7 @@ export const ThumbnailGenerateModal = ({
   videoId,
   open,
   onOpenChange,
+  setIsAiThumbnailBeingGenerated,
 }: ThumbnailGenerateModalProps) => {
   const trpc = useTRPC();
 
@@ -43,8 +45,10 @@ export const ThumbnailGenerateModal = ({
 
         form.reset();
         onOpenChange(false);
+        setIsAiThumbnailBeingGenerated();
       },
-      onError: () => {
+      onError: (e) => {
+        console.log(e.message);
         toast.error("Something went wrong");
       },
     }),
