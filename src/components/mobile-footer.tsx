@@ -148,7 +148,7 @@ export const MobileFooter = () => {
   return (
     <>
       <div className="block min-w-screen min-h-10" />
-      <div className="px-4 pt-1.5 pb-1 fixed bottom-0 left-0 w-full  bg-white flex justify-evenly gap-4 border-muted-foreground border-t border-t-muted-foreground/25">
+      <div className="px-4 pt-1.5 pb-2 fixed bottom-0 left-0 w-full  bg-white flex justify-evenly gap-4 border-muted-foreground border-t border-t-muted-foreground/25">
         {items.slice(undefined, 2).map((item) => (
           <FooterItem
             key={item.title}
