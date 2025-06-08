@@ -14,7 +14,7 @@ export const StudioLayout = ({ children }: StudioLayoutProps) => {
         <StudioNavBar />
         <div className="flex min-h-screen md:pt-[4rem]">
           <StudioSidebar />
-          <main className="flex-1 overflow-y-auto md:py-0 pt-14 pb-6">
+          <main className="flex-1 overflow-y-auto md:py-0 pt-1 pb-6">
             {children}
           </main>
         </div>
