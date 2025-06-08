@@ -8,7 +8,6 @@ import {
 import { UserAvatar } from "@/components/user-avatar";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
-import Image from "next/image";
 
 export const StudioSidebarHeader = () => {
   const { user } = useUser();
@@ -44,12 +43,6 @@ export const StudioSidebarHeader = () => {
 
   return (
     <SidebarHeader className="flex items-center justify-center pb-4">
-      <Link prefetch href="/" className="hidden md:block">
-        <div className="p-4 flex items-center gap-1">
-          <Image src="/logo.svg" alt="logo" width={36} height={36} />
-          <p className="text-xl font-semibold tracking-tight">MagicTube</p>
-        </div>
-      </Link>
       <Link prefetch href="/users/current">
         <UserAvatar
           imageUrl={user?.imageUrl ?? ""}
