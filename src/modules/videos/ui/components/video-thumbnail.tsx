@@ -2,6 +2,7 @@ import { formatDuration } from "@/lib/utils";
 import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "../../constants";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRef, useEffect } from "react";
 
 interface VideoThumbnailProps {
   imageUrl?: string | null;
@@ -24,17 +25,62 @@ export const VideoThumbnail = ({
   previewUrl,
   duration,
 }: VideoThumbnailProps) => {
+  const isHovered = useRef<boolean>(false);
+  const thumbRef = useRef<HTMLImageElement>(null);
+  const previewThumbRef = useRef<HTMLImageElement>(null);
+
+  const toggleVideoPreview = () => {
+    if (!thumbRef.current || !previewThumbRef.current) return;
+
+    if (!isHovered.current) {
+      thumbRef.current.style.opacity = "100";
+      previewThumbRef.current.style.opacity = "0";
+      return;
+    }
+    thumbRef.current.style.opacity = "0";
+    previewThumbRef.current.style.opacity = "100";
+  };
+
+  const resetStyles = () => {
+    if (!thumbRef.current || !previewThumbRef.current) return;
+    thumbRef.current.style = "";
+    previewThumbRef.current.style = "";
+  };
+
+  const handlePointerDown = () => {
+    const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+    if (!isMobile) return resetStyles();
+
+    isHovered.current = true;
+    toggleVideoPreview();
+  };
+
+  useEffect(() => {
+    const handlePointerUp = () => {
+      const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+      if (!isMobile) return resetStyles();
+
+      isHovered.current = false;
+      toggleVideoPreview();
+    };
+
+    document.addEventListener("touchend", handlePointerUp);
+    return () => document.removeEventListener("pointerup", handlePointerUp);
+  }, [thumbRef, previewThumbRef]);
+
   return (
-    <div className="relative group">
+    <div className="relative group" onPointerDown={handlePointerDown}>
       {/* Thumbnail wrapper  */}
       <div className="relative w-full overflow-hidden rounded-xl aspect-video">
         <Image
+          ref={thumbRef}
           src={imageUrl ?? THUMBNAIL_FALLBACK}
           alt={title}
           fill
           className="h-full w-full object-cover group-hover:opacity-0"
         />
         <Image
+          ref={previewThumbRef}
           unoptimized={!!previewUrl}
           src={previewUrl ?? imageUrl ?? THUMBNAIL_FALLBACK}
           alt={title}
