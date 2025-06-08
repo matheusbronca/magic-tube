@@ -20,7 +20,7 @@ export default function NotFound() {
           <h2 className="text-lg font-semibold m-0">Not Found</h2>
           <p className="mb-8">Could not find requested resource</p>
           <Button asChild size={"lg"}>
-            <Link href="/">
+            <Link prefetch href="/">
               <HomeIcon size="4" />
               Return Home
             </Link>
