@@ -12,6 +12,13 @@ export const metadata: Metadata = {
     template: "%s | MagicTube",
     default: "MagicTube",
   },
+  openGraph: {
+    title: "MagicTube",
+    description:
+      "Enjoy the videos and music you love, and upload and share original content with friends, family, and the world on MagicTube.",
+    images: ["https://magictube.matheusbronca.com/og-img.jpg"],
+    type: "website",
+  },
   description:
     "Enjoy the videos and music you love, and upload and share original content with friends, family, and the world on MagicTube.",
 };

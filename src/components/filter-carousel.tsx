@@ -47,7 +47,12 @@ export const FilterCarousel = ({
 
   return (
     <StickyHeader initialYPos={63}>
-      <div className={"relative w-full bg-white py-2 px-1"}>
+      <div className="h-10 hidden md:block" />
+      <div
+        className={
+          "relative md:fixed md:-translate-y-2 w-full bg-white py-2 px-1 md:z-10"
+        }
+      >
         {/* Left fade */}
         <div
           className={cn(

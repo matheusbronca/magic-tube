@@ -75,7 +75,7 @@ const FooterItem = ({
     <Button
       asChild
       className={cn(
-        "flex flex-col gap-.5 items-center max-w-[48px] text-foregroung bg-transparent",
+        "flex flex-col gap-.5 items-center max-w-[48px] text-foregroung bg-transparent shadow-none",
         isActive && !ActiveIcon && "[&_svg]:fill-black",
       )}
       onClick={handleAuth}
