@@ -27,7 +27,7 @@ export const StudioNavBar = () => {
 
         <div className="flex-shrink-0 items-center flex gap-4">
           <StudioUploadModal />
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center">
             <AuthButton />
           </div>
         </div>
