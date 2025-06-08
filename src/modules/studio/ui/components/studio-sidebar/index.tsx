@@ -13,12 +13,20 @@ import Link from "next/link";
 import { LogOutIcon, VideoIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { StudioSidebarHeader } from "./studio-sidebar-header";
+import Image from "next/image";
 
 export const StudioSidebar = () => {
   const pathname = usePathname();
 
   return (
     <Sidebar className="pt-16 z-40 border-none" collapsible="icon">
+      <Link prefetch href="/studio" className="block md:hidden bg-white">
+        <div className="p-4 flex items-center gap-1">
+          <Image src="/logo.svg" alt="logo" width={36} height={36} />
+          <p className="text-xl font-semibold tracking-tight">Studio</p>
+        </div>
+      </Link>
+
       <SidebarContent className="bg-background">
         <SidebarGroup>
           <SidebarMenu>
