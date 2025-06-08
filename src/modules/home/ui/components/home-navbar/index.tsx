@@ -3,30 +3,47 @@ import Link from "next/link";
 import Image from "next/image";
 import { SearchInput } from "./search-input";
 import { AuthButton } from "@/modules/auth/ui/components/auth-button";
+import { MobileSearchInput } from "./mobile-search-button";
+import { StickyHeader } from "@/components/sticky-header";
 
 export const HomeNavBar = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 h-16 bg-white flex items-center w-full px-2 pr-5 z-50">
-      <div className="flex items-center gap-4 w-full">
-        {/* Menu and logo */}
-        <div className="flex items-center flex-shrink-0">
-          <SidebarTrigger className="rounded-full p-5" />
-          <Link prefetch href="/" className="hidden md:block">
-            <div className="p-4 flex items-center gap-1">
-              <Image src="/logo.svg" alt="logo" width={36} height={36} />
-              <p className="text-xl font-semibold tracking-tight">MagicTube</p>
-            </div>
-          </Link>
-        </div>
+    <StickyHeader additionalHeight={46}>
+      <nav className="h-16 bg-white flex items-center w-full px-2 pr-5 z-50 md:fixed">
+        <div className="flex items-center gap-2 md:gap-4 w-full">
+          <div className="hidden md:block">
+            <SidebarTrigger className="rounded-full p-5" />
+          </div>
 
-        {/* Search bar  */}
-        <div className="flex-1 flex justify-center max-w-[720px] mx-auto">
-          <SearchInput />
+          {/* Menu and logo */}
+          <div className="flex items-center flex-shrink-0">
+            <Link prefetch href="/">
+              <div className="p-4 flex items-center gap-1">
+                <Image src="/logo.svg" alt="logo" width={36} height={36} />
+                <p className="text-xl font-semibold tracking-tight">
+                  MagicTube
+                </p>
+              </div>
+            </Link>
+          </div>
+
+          {/* Search bar  */}
+          <div className="flex-1 flex justify-end md:justify-center max-w-[720px] mx-auto">
+            <div className="hidden md:flex w-full">
+              <SearchInput />
+            </div>
+            <div className="block md:hidden">
+              <MobileSearchInput />
+            </div>
+          </div>
+          <div className="flex-shrink-0 items-center gap-4 hidden md:flex">
+            <AuthButton />
+          </div>
+          <div className="block md:hidden">
+            <SidebarTrigger className="rounded-full p-5" />
+          </div>
         </div>
-        <div className="flex-shrink-0 items-center flex gap-4">
-          <AuthButton />
-        </div>
-      </div>
-    </nav>
+      </nav>
+    </StickyHeader>
   );
 };

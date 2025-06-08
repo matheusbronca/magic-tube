@@ -54,9 +54,13 @@ export const PersonalSection = () => {
                     e.preventDefault();
                     return clerk.openSignIn();
                   }
-                }} // TODO: Do something on click
+                }}
               >
-                <Link prefetch href={item.url} className="flex items-center gap-4">
+                <Link
+                  prefetch
+                  href={item.url}
+                  className="flex items-center gap-4"
+                >
                   <item.icon />
                   <span className="text-sm">{item.title}</span>
                 </Link>

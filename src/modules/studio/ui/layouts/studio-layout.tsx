@@ -1,3 +1,4 @@
+import { MobileFooter } from "@/components/mobile-footer";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { StudioNavBar } from "@/modules/studio/ui/components/studio-navbar";
 import { StudioSidebar } from "@/modules/studio/ui/components/studio-sidebar";
@@ -11,10 +12,11 @@ export const StudioLayout = ({ children }: StudioLayoutProps) => {
     <SidebarProvider>
       <div className="w-full">
         <StudioNavBar />
-        <div className="flex min-h-screen pt-[4rem]">
+        <div className="flex min-h-screen md:pt-[4rem]">
           <StudioSidebar />
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
+        <MobileFooter />
       </div>
     </SidebarProvider>
   );

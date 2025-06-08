@@ -20,13 +20,16 @@ export const StudioSidebar = () => {
 
   return (
     <Sidebar className="pt-16 z-40 border-none" collapsible="icon">
-      <Link prefetch href="/studio" className="block md:hidden bg-white">
-        <div className="p-4 flex items-center gap-1">
-          <Image src="/logo.svg" alt="logo" width={36} height={36} />
-          <p className="text-xl font-semibold tracking-tight">Studio</p>
-        </div>
-      </Link>
-
+      {/* Logo */}
+      <div className="bg-white block md:hidden">
+        <Link prefetch href="/studio">
+          <div className="p-4 flex items-center gap-1">
+            <Image src="/logo.svg" alt="logo" width={36} height={36} />
+            <p className="text-xl font-semibold tracking-tight">Studio</p>
+          </div>
+        </Link>
+      </div>
+      {/* Logo */}
       <SidebarContent className="bg-background">
         <SidebarGroup>
           <SidebarMenu>

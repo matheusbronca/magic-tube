@@ -25,6 +25,7 @@ export default function RootLayout({
     <ClerkProvider afterSignOutUrl={"/"}>
       <html lang="en">
         <body className={`${inter.className} antialiased`}>
+          <div id="sticky-root" />
           <TRPCReactProvider>
             <Toaster />
             {children}

@@ -220,3 +220,15 @@ mux-player {
     background-position: 100%;
   }
 }
+
+.cl-userButtonPopoverFooter>[class^="cl-internal-"],
+.cl-footer>[class^="cl-internal-"] {
+  display: none !important;
+}
+
+@media (max-width: 1023px) {
+  .cl-userButtonPopoverCard {
+    left: 50% !important;
+    transform: translateX(-50%) translateY(-5%) !important;
+  }
+}
