@@ -103,7 +103,7 @@ export const VideosSectionSuspense = () => {
 
   return (
     <div>
-      <div className="border-y">
+      <div>
         <Table>
           <TableHeader>
             <TableRow>

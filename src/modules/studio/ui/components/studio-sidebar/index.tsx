@@ -18,8 +18,8 @@ export const StudioSidebar = () => {
   const pathname = usePathname();
 
   return (
-    <Sidebar className="pt-16 z-40" collapsible="icon">
-      <SidebarContent className="bg-background ">
+    <Sidebar className="pt-16 z-40 border-none" collapsible="icon">
+      <SidebarContent className="bg-background">
         <SidebarGroup>
           <SidebarMenu>
             <StudioSidebarHeader />
@@ -35,7 +35,7 @@ export const StudioSidebar = () => {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <Separator />
+            <Separator className="my-2" />
             <SidebarMenuItem>
               <SidebarMenuButton tooltip="Exit Studio" asChild>
                 <Link prefetch href="/">

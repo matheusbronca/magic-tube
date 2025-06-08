@@ -6,7 +6,7 @@ import { StudioUploadModal } from "../studio-upload-modal";
 
 export const StudioNavBar = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 h-16 bg-white flex items-center w-full px-2 pr-5 z-50 border-bottom shadow-md">
+    <nav className="fixed top-0 left-0 right-0 h-16 bg-white flex items-center w-full px-2 pr-5 z-50 border-bottom">
       <div className="flex items-center gap-2">
         {/* Menu and logo */}
         <SidebarTrigger className="rounded-full p-5" />
