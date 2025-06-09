@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { ErrorBoundary } from "react-error-boundary";
-import { Suspense, useLayoutEffect, useState } from "react";
+import { Suspense, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -81,6 +81,7 @@ import { AiThumbnailPlaceholder } from "../components/ai-thumbnail-placeholder";
 import { AiTextPlaceholder } from "../components/ai-text-placeholder";
 import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { VideoLoadingPlaceholder } from "../components/video-loading-placeholder";
 
 interface FormSectionProps {
   videoId: string;
@@ -94,6 +95,20 @@ type VideoStatusKind =
   | "Error";
 
 type SubtitlesStatusKind = VideoStatusKind | "Deleted" | "No Subtitles";
+
+type VideoFormData = {
+  title?: string;
+  description?: string;
+  thumbnailUrl?: string;
+  category?: string;
+  visibility: "public" | "private";
+  updating:
+    | "title"
+    | "description"
+    | "thumbnailUrl"
+    | "category"
+    | "visibility";
+};
 
 const VideoStatusIcon = ({ videoStatus }: { videoStatus: VideoStatusKind }) => {
   if (videoStatus === "Preparing")
@@ -137,6 +152,8 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
   const [isAiDescriptionBeingGenerated, setIsAiDescriptionBeingGenerated] =
     useState<string | undefined>();
 
+  const formData = useRef<VideoFormData>(null);
+
   const isAiGenerating =
     !!isAiTitleBeingGenerated ||
     !!isAiDescriptionBeingGenerated ||
@@ -146,6 +163,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     trpc.studio.getOne.queryOptions(
       { id: videoId },
       {
+        refetchOnWindowFocus: false,
         refetchInterval: () => {
           return videoStatus !== "ready" || isAiGenerating ? 2500 : undefined;
         },
@@ -159,6 +177,17 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
   const subtitlesStatusLabel =
     snakeCaseToTitle(data.muxTrackStatus as string) || "No Subtitles";
 
+  const form = useForm<z.infer<typeof videoUpdateSchema>>({
+    defaultValues: data,
+    values: formData.current
+      ? {
+          ...formData.current,
+          [formData.current.updating]: data[formData.current.updating],
+        }
+      : data,
+    resolver: zodResolver(videoUpdateSchema),
+  });
+
   useLayoutEffect(() => {
     setVideoStatus(data.muxStatus);
   }, [data]);
@@ -170,10 +199,12 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
       trpc.studio.getOne.queryFilter({ id: videoId }),
     );
 
-    if (isAiTitleBeingGenerated !== data.title)
+    if (isAiTitleBeingGenerated !== data.title) {
       setIsAiTitleBeingGenerated(undefined);
-    if (isAiDescriptionBeingGenerated !== data.description)
+    }
+    if (isAiDescriptionBeingGenerated !== data.description) {
       setIsAiDescriptionBeingGenerated(undefined);
+    }
     if (
       isAiThumbnailBeingGenerated !== undefined &&
       isAiThumbnailBeingGenerated !== data.thumbnailUrl &&
@@ -262,7 +293,13 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
 
   const generateTitle = useMutation(
     trpc.videos.generateTitle.mutationOptions({
-      onMutate: () => setIsAiTitleBeingGenerated(data.title ?? ""),
+      onMutate: () => {
+        setIsAiTitleBeingGenerated(data.title ?? "");
+        formData.current = {
+          ...form.getValues(),
+          updating: "title",
+        } as VideoFormData;
+      },
       onSuccess: () => {
         toast.success("Background job started", {
           description: "This may take some time",
@@ -277,7 +314,13 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
 
   const generateDescription = useMutation(
     trpc.videos.generateDescription.mutationOptions({
-      onMutate: () => setIsAiDescriptionBeingGenerated(data.description ?? ""),
+      onMutate: () => {
+        setIsAiDescriptionBeingGenerated(data.description ?? "");
+        formData.current = {
+          ...form.getValues(),
+          updating: "description",
+        } as VideoFormData;
+      },
       onSuccess: () => {
         toast.success("Background job started", {
           description: "This may take some time",
@@ -299,12 +342,6 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     isAiTitleBeingGenerated || generateTitle.isPending;
   const isDescriptionGenerationTemporaryDisabled =
     isAiDescriptionBeingGenerated || generateDescription.isPending;
-
-  const form = useForm<z.infer<typeof videoUpdateSchema>>({
-    defaultValues: data,
-    values: data,
-    resolver: zodResolver(videoUpdateSchema),
-  });
 
   const onSubmit = async (data: z.infer<typeof videoUpdateSchema>) => {
     await update.mutateAsync(data);
@@ -329,9 +366,13 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
       <ThumbnailGenerateModal
         open={thumbnailGenerateModalOpen}
         onOpenChange={setThumbnailGenerateModalOpen}
-        setIsAiThumbnailBeingGenerated={() =>
-          setIsAiThumbnailBeingGenerated(data.thumbnailUrl ?? "")
-        }
+        setIsAiThumbnailBeingGenerated={() => {
+          setIsAiThumbnailBeingGenerated(data.thumbnailUrl ?? "");
+          formData.current = {
+            ...form.getValues(),
+            updating: "thumbnailUrl",
+          } as VideoFormData;
+        }}
         videoId={videoId}
       />
       <ThumbnailUploadModal
@@ -404,11 +445,12 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                   "rounded-full size-6 [&_svg]:size-3  text-blue-500 hover:text-blue-600",
                                   (isDisabled ||
                                     !!isTitleGenerationTemporaryDisabled) &&
-                                    "!pointer-events-auto",
+                                    "!pointer-events-auto cursor-auto",
                                 )}
                                 disabled={
                                   isDisabled ||
-                                  !!isTitleGenerationTemporaryDisabled
+                                  !!isTitleGenerationTemporaryDisabled ||
+                                  data.muxStatus !== "ready"
                                 }
                                 onClick={() => {
                                   if (
@@ -451,6 +493,9 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                         <FormControl>
                           <Input
                             {...field}
+                            disabled={
+                              data.muxStatus !== "ready" || isAiGenerating
+                            }
                             placeholder="Add a title to your video"
                           />
                         </FormControl>
@@ -483,7 +528,8 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 )}
                                 disabled={
                                   isDisabled ||
-                                  !!isDescriptionGenerationTemporaryDisabled
+                                  !!isDescriptionGenerationTemporaryDisabled ||
+                                  data.muxStatus !== "ready"
                                 }
                                 onClick={() => {
                                   if (
@@ -525,6 +571,9 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                       <FormControl>
                         <Textarea
                           {...field}
+                          disabled={
+                            data.muxStatus !== "ready" || isAiGenerating
+                          }
                           value={field.value ?? ""}
                           rows={8}
                           className="h-[180px] w-full resize-none pr-10"
@@ -559,7 +608,14 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                       </AnimatePresence>
                       <div>
                         <FormControl>
-                          <div className="relative p-0.5 border border-dashed border-neutral-400 rounded-md h-[84px] w-[153px] overflow-hidden group">
+                          <div
+                            className="relative p-0.5 border border-dashed border-neutral-400 rounded-md h-[84px] w-[153px] overflow-hidden group"
+                            style={{ containerType: "size" }}
+                          >
+                            <VideoLoadingPlaceholder
+                              className="absolute z-10"
+                              isLoading={data.muxStatus !== "ready"}
+                            />
                             <Image
                               onLoad={handleThumbnailLoad}
                               src={data.thumbnailUrl ?? THUMBNAIL_FALLBACK}
@@ -616,7 +672,14 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      disabled={data.muxStatus !== "ready" || isAiGenerating}
+                      onValueChange={(e) => {
+                        field.onChange(e);
+                        formData.current = {
+                          ...form.getValues(),
+                          updating: "category",
+                        } as VideoFormData;
+                      }}
                       defaultValue={field.value ?? undefined}
                     >
                       <FormControl className="w-full">
@@ -640,7 +703,13 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
 
             <div className="flex flex-col gap-y-8 lg:col-span-2">
               <div className="flex flex-col gap-4 bg-[#F9F9F9] rounded-xl overflow-hidden h-fit">
-                <div className="aspect-video overflow-hidden relative">
+                <div
+                  className="aspect-video overflow-hidden relative"
+                  style={{ containerType: "size" }}
+                >
+                  <VideoLoadingPlaceholder
+                    isLoading={data.muxStatus !== "ready"}
+                  />
                   <AnimatePresence>
                     {(isAiThumbnailBeingGenerated || !isAiThumbnailLoaded) && (
                       <motion.div
@@ -780,7 +849,14 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                   <FormItem>
                     <FormLabel>Visibility</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      disabled={data.muxStatus !== "ready" || isAiGenerating}
+                      onValueChange={(e) => {
+                        field.onChange(e);
+                        formData.current = {
+                          ...form.getValues(),
+                          updating: "visibility",
+                        } as VideoFormData;
+                      }}
                       defaultValue={field.value ?? undefined}
                     >
                       <FormControl className="w-full">

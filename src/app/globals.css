@@ -109,6 +109,8 @@ mux-player {
 
   --animate-ai-text-to-actual-text: ai-text 2s ease-out forwards;
   --animate-shimmer-translation: shimmer-translation 2.5s ease-out forwards infinite;
+  --animate-container-running: 1s linear 0s infinite normal none running container-running;
+  --animate-container-running-reverse: 6s linear 0s infinite normal none running container-running-reverse;
 
   @keyframes ai-text {
     0% {
@@ -127,6 +129,26 @@ mux-player {
 
     to {
       transform: translateX(35%);
+    }
+  }
+
+  @keyframes container-running-reverse {
+    0% {
+      background-position: 0% center;
+    }
+
+    100% {
+      background-position: 100cqw center;
+    }
+  }
+
+  @keyframes container-running {
+    0% {
+      background-position: 100cqw center;
+    }
+
+    100% {
+      background-position: 0px center;
     }
   }
 }
