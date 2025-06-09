@@ -15,14 +15,14 @@ export const AiTextPlaceholder = ({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 0, transition: { delay: 0.25 } }}
           className={cn(
-            "max-w-full  wrap-anywhere absolute size-full rounded-md  max-h-[180px] duration-1000 ease-out cursor-not-allowed select-none font-medium",
+            "z-20 max-w-full  wrap-anywhere absolute size-full rounded-md  max-h-[180px] duration-1000 ease-out cursor-not-allowed select-none font-medium",
           )}
         >
-          <div className="absolute top-0 left-1/2 rainbow size-full -translate-x-1/2 rounded-md opacity-5" />
-          <div className="absolute top-0 left-1/2 rainbow size-full opacity-10 -translate-x-1/2 blur-md" />
-          <div className="absolute top-0 left-0 rainbow size-full opacity-15 rounded-sm" />
+          <div className="absolute top-0 left-1/2 rainbow size-full -translate-x-1/2 rounded-md opacity-10" />
+          <div className="absolute top-0 left-1/2 rainbow size-full opacity-15 -translate-x-1/2 blur-md" />
+          <div className="absolute top-0 left-0 rainbow size-full opacity-20 rounded-sm" />
           <div
             className={cn(
               "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-100 h-[calc(100%-.15rem)] w-[calc(100%-.15rem)] rounded-sm opacity-100",

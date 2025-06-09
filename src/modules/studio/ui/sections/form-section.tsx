@@ -315,7 +315,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
   const generateDescription = useMutation(
     trpc.videos.generateDescription.mutationOptions({
       onMutate: () => {
-        setIsAiDescriptionBeingGenerated(data.description ?? "");
+        setIsAiDescriptionBeingGenerated(data.description ?? "true");
         formData.current = {
           ...form.getValues(),
           updating: "description",

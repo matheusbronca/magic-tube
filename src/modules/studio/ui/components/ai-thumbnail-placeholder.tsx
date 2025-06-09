@@ -17,14 +17,14 @@ export const AiThumbnailPlaceholder = ({
     >
       <div
         className={cn(
-          "absolute top-0 left-1/2 rainbow size-full opacity-15 -translate-x-1/2 blur-sm",
+          "absolute top-0 left-1/2 rainbow size-full opacity-30 -translate-x-1/2 blur-sm",
           className,
         )}
       />
       <div
         className={cn(
-          "absolute top-0 left-0 rainbow size-full opacity-50 rounded-sm",
-          "opacity-80",
+          "absolute top-0 left-0 rainbow size-full rounded-sm",
+          "opacity-100",
           className,
         )}
       />
