@@ -879,6 +879,19 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                   </FormItem>
                 )}
               />
+              <Button
+                className="md:hidden -mt-4 py-6"
+                size="lg"
+                type="submit"
+                disabled={
+                  update.isPending ||
+                  form.formState.isSubmitting ||
+                  !form.formState.isDirty
+                }
+              >
+                <SaveIcon className="size-4" />
+                Save
+              </Button>
             </div>
           </div>
         </form>
