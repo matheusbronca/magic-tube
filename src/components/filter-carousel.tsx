@@ -50,14 +50,14 @@ export const FilterCarousel = ({
       <div className="h-10 hidden md:block" />
       <div
         className={
-          "relative md:fixed md:-translate-y-2 w-full bg-white py-2 px-1 md:z-10"
+          "relative md:fixed md:-translate-y-3 w-full md:w-[calc(85%)] bg-white py-2 px-1 md:z-10"
         }
       >
         {/* Left fade */}
         <div
           className={cn(
             "absolute hidden md:block md:left-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-white to-transparent pointer-events-none",
-            (current === 1 || !current) && "hidden",
+            (Math.ceil(current) === 1 || !current) && "hidden md:hidden",
           )}
         />
 
@@ -115,7 +115,7 @@ export const FilterCarousel = ({
         <div
           className={cn(
             "absolute right-0 md:right-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-white to-transparent pointer-events-none",
-            current === count && !!current && "hidden",
+            Math.ceil(current) === count && !!current && "hidden",
           )}
         />
       </div>
