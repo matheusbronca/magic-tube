@@ -106,7 +106,7 @@ export const VideoThumbnailField = () => {
                         <Button
                           type="button"
                           size="icon"
-                          className="bg-black/50 hover:bg-black/50 absolute top-1 right-1 rounded-full opacity-100 hidden md:block md:opacity-0 group-hover:opacity-100 duration-300 size-7"
+                          className="bg-black/50 hover:bg-black/50 absolute top-1 right-1 rounded-full opacity-100 hidden md:flex md:opacity-0 group-hover:opacity-100 duration-300 size-7"
                         >
                           <MoreVerticalIcon className="text-white" />
                         </Button>

@@ -73,7 +73,7 @@ export const VideoThumbnail = ({
   return (
     <div className="relative group" onPointerDown={handlePointerDown}>
       {/* Thumbnail wrapper  */}
-      <div className="relative w-full overflow-hidden rounded-xl aspect-video">
+      <div className="relative w-full overflow-hidden rounded-xl aspect-video bg-accent">
         <Image
           ref={thumbRef}
           src={imageUrl ?? THUMBNAIL_FALLBACK}

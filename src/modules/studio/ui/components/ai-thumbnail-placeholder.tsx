@@ -15,7 +15,10 @@ export const AiThumbnailPlaceholder = ({
     <AnimatePresence>
       {isActive && (
         <motion.div
-          className="absolute left-0 p-0.5 border border-dashed border-blue-200 rounded-md  h-[84px] w-[153px] group z-10  cursor-not-allowed"
+          className={cn(
+            "absolute left-0 p-0.5 border border-dashed border-blue-200 rounded-md  h-[84px] w-[153px] group z-10  cursor-not-allowed",
+            size === "lg" && "h-full w-full border-none scale-[1.01]",
+          )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

@@ -76,7 +76,7 @@ export const ThumbnailGenerateModal = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-4 px-4 md:p-0"
         >
           <FormField
             control={form.control}
