@@ -1,4 +1,4 @@
-import { formatDuration } from "@/lib/utils";
+import { cn, formatDuration } from "@/lib/utils";
 import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "../../constants";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,6 +9,7 @@ interface VideoThumbnailProps {
   previewUrl?: string | null;
   title: string;
   duration: number;
+  hasMatureContent: boolean;
 }
 
 export const VideoThumbnailSkeleton = () => {
@@ -24,6 +25,7 @@ export const VideoThumbnail = ({
   imageUrl,
   previewUrl,
   duration,
+  hasMatureContent,
 }: VideoThumbnailProps) => {
   const isHovered = useRef<boolean>(false);
   const thumbRef = useRef<HTMLImageElement>(null);
@@ -85,7 +87,10 @@ export const VideoThumbnail = ({
           src={previewUrl ?? imageUrl ?? THUMBNAIL_FALLBACK}
           alt={title}
           fill
-          className="h-full w-full object-cover opacity-0 group-hover:opacity-100"
+          className={cn(
+            "h-full w-full object-cover opacity-0 group-hover:opacity-100",
+            hasMatureContent && "blur-md",
+          )}
         />
       </div>
 
@@ -93,6 +98,13 @@ export const VideoThumbnail = ({
       <div className="absolute bottom-2 right-2 px-1 py-0.5 rounded bg-black/80 text-white text-xs font-medium">
         {formatDuration(duration)}
       </div>
+
+      {/* NSFW Box */}
+      {hasMatureContent && (
+        <div className="absolute top-2 left-2 px-1 py-0.5 rounded bg-black/80 text-white text-xs font-medium">
+          {"NSFW 🔞"}
+        </div>
+      )}
     </div>
   );
 };

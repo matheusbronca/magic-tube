@@ -98,12 +98,17 @@ export const VideoRowCard = ({
   }, [data.likeCount]);
   return (
     <div className={videoRowCardVariants({ size })}>
-      <Link prefetch href={`/videos/${data.id}`} className={thumbnailVariants({ size })}>
+      <Link
+        prefetch
+        href={`/videos/${data.id}`}
+        className={thumbnailVariants({ size })}
+      >
         <VideoThumbnail
           imageUrl={data.thumbnailUrl}
           previewUrl={data.previewUrl}
           title={data.title}
           duration={data.duration}
+          hasMatureContent={Boolean(data.hasMatureContent)}
         />
       </Link>
       {/*Info*/}

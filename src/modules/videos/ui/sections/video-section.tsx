@@ -7,11 +7,13 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { VideoPlayer, VideoPlayerSkeleton } from "../components/video-player";
 import { VideoBanner } from "../components/video-banner";
 import { VideoTopRow, VideoTopRowSkeleton } from "../components/video-top-row";
+import { VideoNSFW } from "../components/video-nfsw";
+
 import { useAuth } from "@clerk/nextjs";
 
 interface VideoSectionProps {
@@ -43,6 +45,9 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
   const { data: video } = useSuspenseQuery(
     trpc.videos.getOne.queryOptions({ id: videoId }),
   );
+
+  const [hasUserOptIn, setHasUserOptIn] = useState(false);
+
   const { isSignedIn } = useAuth();
   const createView = useMutation(
     trpc.videoViews.create.mutationOptions({
@@ -63,16 +68,24 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     <>
       <div
         className={cn(
-          "aspect-video bg-black rounded-xl overflow-hidden relative",
+          "aspect-video bg-black md:rounded-xl w-screen -ml-4 -mt-4 md:w-full md:overflow-hidden relative",
           video.muxStatus !== "ready" && "rounded-b-none",
         )}
       >
-        <VideoPlayer
-          autoPlay
-          onPlay={handlePlay}
-          playbackId={video.muxPlaybackId}
-          thumbnailUrl={video.thumbnailUrl}
-        />
+        <div className="relative h-full">
+          {video.hasMatureContent && (
+            <VideoNSFW setHasUserOptInAction={setHasUserOptIn} />
+          )}
+
+          <VideoPlayer
+            autoPlay
+            isNSFWActive={Boolean(video.hasMatureContent) && !hasUserOptIn}
+            muted={video.hasMatureContent && !hasUserOptIn}
+            onPlay={handlePlay}
+            playbackId={video.muxPlaybackId}
+            thumbnailUrl={video.thumbnailUrl}
+          />
+        </div>
       </div>
       <VideoBanner status={video.muxStatus} />
       <VideoTopRow video={video} />

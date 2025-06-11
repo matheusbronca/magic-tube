@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { categories } from "@/db/schema";
 
-const categoryNames = [
+export const categoryNames = [
   "Cars and vehicles",
   "Comedy",
   "Education",
@@ -16,7 +16,7 @@ const categoryNames = [
   "Science and technology",
   "Sports",
   "Travel and events",
-];
+] as const;
 
 async function main() {
   console.log("Seeding categories...");

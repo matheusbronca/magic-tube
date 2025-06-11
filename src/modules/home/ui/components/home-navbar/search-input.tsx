@@ -8,6 +8,7 @@ import { SearchIcon, XIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { Suspense, useState } from "react";
+import { SEARCHED_EVENT } from "./mobile-search-button";
 
 export const SearchInput = () => {
   return (
@@ -28,6 +29,11 @@ export const SearchInputSuspense = () => {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Close Drawer on mobile devices
+    const ev = new CustomEvent(SEARCHED_EVENT);
+    window.dispatchEvent(ev);
+    // Close Drawer on mobile devices
 
     const url = new URL("/search", APP_URL);
     const newQuery = value.trim();
@@ -69,7 +75,9 @@ export const SearchInputSuspense = () => {
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => setValue("")}
+            onClick={() => {
+              setValue("");
+            }}
             className="absolute  right-0 md:right-2 top-1/2 -translate-y-1/2 rounded-full"
           >
             <XIcon className="text-gray-500" />

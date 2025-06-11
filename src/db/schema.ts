@@ -10,6 +10,7 @@ import {
   pgEnum,
   primaryKey,
   foreignKey,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 import {
@@ -123,6 +124,7 @@ export const videos = pgTable("videos", {
   previewKey: varchar("preview_key", { length: 255 }),
   duration: integer("duration").default(0).notNull(),
   visibility: videoVisibility("visibility").default("private").notNull(),
+  hasMatureContent: boolean("has_mature_content").default(false),
   userId: uuid("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),

@@ -26,6 +26,7 @@ export const VideoGridCard = ({ data, onRemove }: VideoGridCardProps) => {
           previewUrl={data.previewUrl}
           title={data.title}
           duration={data.duration}
+          hasMatureContent={Boolean(data.hasMatureContent)}
         />
       </Link>
       <VideoInfo data={data} onRemove={onRemove} />

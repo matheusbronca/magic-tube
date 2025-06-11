@@ -12,6 +12,21 @@ import type { AppRouter } from "./routers/_app";
 import { APP_URL } from "@/constants";
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 let browserQueryClient: QueryClient;
+
+export const trpcClientRaw = createTRPCClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      transformer: superjson,
+      url: getUrl(),
+      async headers() {
+        const headers = new Headers();
+        headers.set("x-trpc-source", "nextjs-react");
+        return headers;
+      },
+    }),
+  ],
+});
+
 function getQueryClient() {
   if (typeof window === "undefined") {
     // Server: always make a new query client
@@ -43,21 +58,7 @@ export function TRPCReactProvider(
   //       suspend because React will throw away the client on the initial
   //       render if it suspends and there is no boundary
   const queryClient = getQueryClient();
-  const [trpcClient] = useState(() =>
-    createTRPCClient<AppRouter>({
-      links: [
-        httpBatchLink({
-          transformer: superjson,
-          url: getUrl(),
-          async headers() {
-            const headers = new Headers();
-            headers.set("x-trpc-source", "nextjs-react");
-            return headers;
-          },
-        }),
-      ],
-    }),
-  );
+  const [trpcClient] = useState(() => trpcClientRaw);
   return (
     <QueryClientProvider client={queryClient}>
       <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>

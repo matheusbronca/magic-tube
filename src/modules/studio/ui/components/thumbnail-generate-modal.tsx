@@ -15,25 +15,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-interface ThumbnailGenerateModalProps {
-  videoId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  setIsAiThumbnailBeingGenerated: () => void;
-}
+import { useVideoFormContext } from "../sections/form-section/context/video-form-section-context";
+import { useVideoModal } from "../sections/form-section/context/video-modal-context";
 
 const formSchema = z.object({
   prompt: z.string().min(10),
 });
 
-export const ThumbnailGenerateModal = ({
-  videoId,
-  open,
-  onOpenChange,
-  setIsAiThumbnailBeingGenerated,
-}: ThumbnailGenerateModalProps) => {
+export const ThumbnailGenerateModal = () => {
   const trpc = useTRPC();
+
+  const { isGenerateThumbnailOpen, setIsGenerateThumbnailOpen } =
+    useVideoModal();
+
+  const {
+    videoId,
+    data: { video },
+    setters: { setIsAiThumbnailBeingGenerated },
+  } = useVideoFormContext();
 
   const generateThumbnail = useMutation(
     trpc.videos.generateThumbnail.mutationOptions({
@@ -44,8 +43,8 @@ export const ThumbnailGenerateModal = ({
         });
 
         form.reset();
-        onOpenChange(false);
-        setIsAiThumbnailBeingGenerated();
+        setIsGenerateThumbnailOpen?.(false);
+        setIsAiThumbnailBeingGenerated(video.thumbnailUrl ?? "");
       },
       onError: (e) => {
         console.log(e.message);
@@ -63,7 +62,7 @@ export const ThumbnailGenerateModal = ({
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     generateThumbnail.mutate({
-      id: videoId,
+      id: videoId as string,
       prompt: values.prompt,
     });
   };
@@ -71,8 +70,8 @@ export const ThumbnailGenerateModal = ({
   return (
     <ResponsiveModal
       title="Generate a thumbnail"
-      open={open}
-      onOpenChange={onOpenChange}
+      open={isGenerateThumbnailOpen}
+      onOpenChange={setIsGenerateThumbnailOpen!}
     >
       <Form {...form}>
         <form

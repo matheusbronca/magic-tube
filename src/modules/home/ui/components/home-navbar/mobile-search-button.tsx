@@ -12,10 +12,26 @@ import {
 } from "@/components/ui/drawer";
 import { SearchInput } from "./search-input";
 import { SearchIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+
+export const SEARCHED_EVENT = "searched-ev";
 
 export const MobileSearchInput = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleSearchTrigger = () => {
+      console.log("RODEI");
+      setIsOpen(false);
+    };
+
+    window.addEventListener(SEARCHED_EVENT, handleSearchTrigger);
+    return () =>
+      window.removeEventListener(SEARCHED_EVENT, handleSearchTrigger);
+  }, []);
+
   return (
-    <Drawer>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         <Button variant="outline" className="border-none shadow-none">
           <SearchIcon className="size-5" />
