@@ -15,12 +15,21 @@ export const metadata: Metadata = {
   openGraph: {
     title: "MagicTube",
     description:
-      "Enjoy the videos and music you love, and upload and share original content with friends, family, and the world on MagicTube.",
+      "Enjoy the AI videos and music you love, and upload and share original content with friends, family, and the world on MagicTube.",
     images: ["https://magictube.matheusbronca.com/og-img.jpg"],
     type: "website",
+    siteName: "MagicTube",
+    url: "https://magictube.matheusbronca.com.br",
+  },
+  twitter: {
+    title: "MagicTube",
+    description:
+      "Enjoy the AI videos and music you love, and upload and share original content with friends, family, and the world on MagicTube.",
+    images: ["https://magictube.matheusbronca.com/og-img.jpg"],
+    site: "https://magictube.matheusbronca.com.br",
   },
   description:
-    "Enjoy the videos and music you love, and upload and share original content with friends, family, and the world on MagicTube.",
+    "Enjoy the AI videos and music you love, and upload and share original content with friends, family, and the world on MagicTube.",
 };
 
 export default function RootLayout({
