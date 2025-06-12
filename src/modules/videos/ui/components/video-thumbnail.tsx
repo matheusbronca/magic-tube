@@ -2,7 +2,7 @@ import { cn, formatDuration } from "@/lib/utils";
 import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "../../constants";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, SyntheticEvent } from "react";
 
 interface VideoThumbnailProps {
   imageUrl?: string | null;
@@ -70,6 +70,8 @@ export const VideoThumbnail = ({
     return () => document.removeEventListener("pointerup", handlePointerUp);
   }, [thumbRef, previewThumbRef]);
 
+  const showPlaceholderOnError = (e: SyntheticEvent<HTMLImageElement>) =>
+    (e.currentTarget.src = THUMBNAIL_FALLBACK);
   return (
     <div className="relative group" onPointerDown={handlePointerDown}>
       {/* Thumbnail wrapper  */}
@@ -79,6 +81,7 @@ export const VideoThumbnail = ({
           src={imageUrl ?? THUMBNAIL_FALLBACK}
           alt={title}
           fill
+          onError={showPlaceholderOnError}
           className="h-full w-full object-cover group-hover:opacity-0"
         />
         <Image
@@ -87,6 +90,7 @@ export const VideoThumbnail = ({
           src={previewUrl ?? imageUrl ?? THUMBNAIL_FALLBACK}
           alt={title}
           fill
+          onError={showPlaceholderOnError}
           className={cn(
             "h-full w-full object-cover opacity-0 group-hover:opacity-100",
             hasMatureContent && "blur-md",
