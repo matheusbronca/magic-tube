@@ -33,12 +33,12 @@ export const VideoHeader = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onClick={() => revalidate.mutate({ id: videoId })}
+              onClick={() => revalidate?.mutate({ id: videoId })}
             >
               <RotateCcwIcon className="size-4 mr-2" />
               Revalidate
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => remove.mutate({ id: videoId })}>
+            <DropdownMenuItem onClick={() => remove?.mutate({ id: videoId })}>
               <TrashIcon className="size-4 mr-2" />
               Delete
             </DropdownMenuItem>

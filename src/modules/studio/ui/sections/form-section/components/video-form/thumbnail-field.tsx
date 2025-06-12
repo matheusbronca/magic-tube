@@ -146,6 +146,7 @@ export const VideoThumbnailField = () => {
                   type="button"
                   size="lg"
                   className="bg-white"
+                  onClick={() => setIsChangeThumbnailOpen?.(true)}
                 >
                   <ImagePlusIcon className="size-4 mr-1" />
                   Change
@@ -154,6 +155,7 @@ export const VideoThumbnailField = () => {
                   variant="secondary"
                   type="button"
                   size="lg"
+                  onClick={() => restoreThumbnail.mutate({ id: videoId ?? "" })}
                   className="bg-white"
                 >
                   <RotateCcwIcon className="size-4 mr-1" />

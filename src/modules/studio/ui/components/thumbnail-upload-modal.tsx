@@ -29,11 +29,13 @@ export const ThumbnailUploadModal = () => {
       open={isChangeThumbnailOpen}
       onOpenChange={setIsChangeThumbnailOpen!}
     >
-      <UploadDropzone
-        endpoint="thumbnailUploader"
-        input={{ videoId }}
-        onClientUploadComplete={onUploadComplete}
-      />
+      <div className="p-4 md:p-0">
+        <UploadDropzone
+          endpoint="thumbnailUploader"
+          input={{ videoId }}
+          onClientUploadComplete={onUploadComplete}
+        />
+      </div>
     </ResponsiveModal>
   );
 };

@@ -2,22 +2,15 @@ import { VideoLoadingPlaceholder } from "@/modules/studio/ui/components/video-lo
 import { useVideoFormContext } from "../../context/video-form-section-context";
 import { AiThumbnailPlaceholder } from "@/modules/studio/ui/components/ai-thumbnail-placeholder";
 import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
-import {
-  CopyCheckIcon,
-  CopyIcon,
-  ExternalLink,
-  LinkIcon,
-  Share2,
-} from "lucide-react";
+import { ExternalLink, LinkIcon, Share2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { VideoStatus } from "../video-statuses/video-status";
 import { SubtitlesStatus } from "../video-statuses/subtitles-status";
-import { useState } from "react";
-import { APP_URL } from "@/constants";
 import { snakeCaseToTitle } from "@/lib/utils";
 import { useVideoModal } from "../../context/video-modal-context";
-import { toast } from "sonner";
+import { VideoLink } from "./video-link";
+import { APP_URL } from "@/constants";
 
 export const VideoPreviewPanel = () => {
   const {
@@ -27,24 +20,11 @@ export const VideoPreviewPanel = () => {
   } = useVideoFormContext();
 
   const { setIsShareModalOpen } = useVideoModal();
+  const fullUrl = `${APP_URL}/videos/${videoId}`;
 
-  const [isCopied, setIsCopied] = useState(false);
   const isLoading = video.muxStatus !== "ready";
   const isGeneratingAIThumbnail =
     isAiThumbnailBeingGenerated || !isAiThumbnailLoaded;
-
-  const fullUrl = `${APP_URL}/videos/${videoId}`;
-
-  const onCopy = async () => {
-    await navigator.clipboard.writeText(fullUrl);
-    setIsCopied(true);
-    toast.success("Done!", {
-      description: "Copied to clipboard",
-      descriptionClassName: "!text-muted-foreground",
-    });
-
-    setTimeout(() => setIsCopied(false), 2000);
-  };
 
   const videoStatusLabel =
     snakeCaseToTitle(video.muxStatus as string) || "Preparing";
@@ -84,12 +64,13 @@ export const VideoPreviewPanel = () => {
               subtitlesStatusLabel={subtitlesStatusLabel}
             />
 
-            <div className="bg-slate-200 p-1.5 rounded-lg">
+            <div className="bg-sidebar-accent p-1.5 rounded-lg">
               <div className="ml-auto flex gap-2">
                 <Button
                   className="flex gap-1 bg-white"
                   variant="secondary"
                   type="button"
+                  disabled={isLoading}
                   onClick={() => setIsShareModalOpen?.(true)}
                 >
                   <Share2 className="text-foreground size-4" />
@@ -116,23 +97,7 @@ export const VideoPreviewPanel = () => {
                 <LinkIcon className="size-3" />
                 Link
               </p>
-              <div className="flex items-center gap-x-2 bg-blue-100 px-4 pr-0 rounded-lg">
-                <Link prefetch href={`/videos/${video.id}`}>
-                  <p className="line-clamp-1 text-sm text-blue-500 max-w-[310px]">
-                    {fullUrl}
-                  </p>
-                </Link>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  className="shrink-0 !rounded-md border-4 border-blue-100"
-                  onClick={onCopy}
-                  disabled={isCopied}
-                >
-                  {isCopied ? <CopyCheckIcon /> : <CopyIcon />}
-                </Button>
-              </div>
+              <VideoLink videoId={videoId} />
             </div>
           </div>
         </div>

@@ -42,7 +42,7 @@ export const VideoMatureField = () => {
             className="
             bg-yellow-100
             border-yellow-500/50
-            hover:bg-yellow-100/80 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950"
+            hover:bg-yellow-100/80 flex items-start gap-3 rounded-lg border p-2 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950"
           >
             <Checkbox
               id="toggle-2"

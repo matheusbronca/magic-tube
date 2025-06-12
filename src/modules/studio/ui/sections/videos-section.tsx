@@ -136,6 +136,7 @@ export const VideosSectionSuspense = () => {
                           previewUrl={video.previewUrl}
                           title={video.title}
                           duration={video.duration ?? 0}
+                          hasMatureContent={Boolean(video.hasMatureContent)}
                         />
                       </div>
                       <div className="flex flex-col overflow-hidden gap-y-1">

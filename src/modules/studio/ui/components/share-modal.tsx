@@ -10,13 +10,16 @@ import {
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { CopyCheckIcon, CopyIcon, Globe2Icon, LockIcon } from "lucide-react";
+import { Globe2Icon, LockIcon } from "lucide-react";
 import { APP_URL } from "@/constants";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useVideoFormContext } from "../sections/form-section/context/video-form-section-context";
 import { useVideoModal } from "../sections/form-section/context/video-modal-context";
 import { toast } from "sonner";
+import { SocialShareButtons } from "./social-buttons";
+import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
+import { VideoLink } from "../sections/form-section/components/video-preview-panel/video-link";
 
 export const ShareModal = () => {
   const {
@@ -42,55 +45,41 @@ export const ShareModal = () => {
   return (
     <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Your video is ready!</DialogTitle>
-          <DialogDescription>
-            You can now share it with your friends
-          </DialogDescription>
+        <DialogHeader className="items-center">
+          <DialogTitle>Your video is ready! 🎉</DialogTitle>
+          <DialogDescription>Share it with friends!</DialogDescription>
         </DialogHeader>
-        <div className="">
-          <div className="flex gap-4 items-center">
+        <div className="min-w-0">
+          <div className="flex flex-col gap-4 items-center">
             {video.thumbnailUrl && (
-              <Link
-                prefetch
-                href={`/videos/${video.id}`}
-                className="font-semibold line-clamp-1 flex  md:aspect-video min-h-[120px] md:min-h-auto"
-              >
-                <Image
-                  className="rounded-xl object-cover "
-                  src={video.thumbnailUrl}
-                  width={250}
-                  height={250}
-                  alt={video.title ?? "MagicTube Video Thumbnail"}
-                />
-              </Link>
-            )}
-            <div className="overflow-hidden">
-              <Link
-                prefetch
-                href={`/videos/${video.id}`}
-                className="font-semibold line-clamp-1"
-              >
-                {video.title}
-              </Link>
-              <div>
-                <Link prefetch href={`/videos/${video.id}`}>
-                  <p className="px-2 line-clamp-1 text-sm text-blue-500 max-w-[310px]">
-                    {fullUrl}
-                  </p>
-                </Link>
-                <Button
-                  type="button"
-                  size="lg"
-                  className="flex gap-2 my-4 w-full"
-                  onClick={onCopy}
-                  disabled={isCopied}
+              <div className="flex flex-col items-center gap-1 size-full bg-accent/50 p-6 pt-4 rounded-2xl">
+                <Link
+                  prefetch
+                  href={`/videos/${video.id}`}
+                  className="font-semibold line-clamp-1"
                 >
-                  <span>Copy link to share</span>
-                  {isCopied ? <CopyCheckIcon /> : <CopyIcon />}
-                </Button>
+                  {video.title}
+                </Link>
+                <Link
+                  prefetch
+                  href={`/videos/${video.id}`}
+                  className="font-semibold line-clamp-1 flex size-full aspect-video md:max-w-[370px] bg-accent rounded-xl mb-1"
+                >
+                  <Image
+                    className="object-cover size-full text-xs font-normal"
+                    src={THUMBNAIL_FALLBACK}
+                    width={250}
+                    height={250}
+                    alt={video.title ?? "MagicTube Video Thumbnail"}
+                  />
+                </Link>
+                <VideoLink videoId={video.id} />
+                <div className="text-muted-foreground text-sm mt-2">
+                  Share with
+                </div>
+                <SocialShareButtons videoId={video.id} />
               </div>
-            </div>
+            )}
           </div>
 
           <AnimatePresence mode="wait">
@@ -105,9 +94,8 @@ export const ShareModal = () => {
                 <div className="flex flex-col gap-3">
                   <div className="flex gap-2">
                     <LockIcon className="size-4 min-w-4" />
-                    The visibility of the video is setted as private, your video
-                    will not be available to the public in MagicTube feed, but
-                    everyone with the link video will be able to see it.
+                    Your video is private and won&apos;t appear in the MagicTube
+                    feed, but anyone with the link can view it.
                   </div>
                   <Button
                     className="flex gap-2 bg-blue-500 hover:bg-blue-600"

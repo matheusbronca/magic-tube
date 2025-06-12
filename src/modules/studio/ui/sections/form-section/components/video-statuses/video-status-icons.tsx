@@ -1,4 +1,10 @@
-import { CircleCheck, CircleXIcon, Loader2Icon, RefreshCw } from "lucide-react";
+import {
+  CircleCheck,
+  CircleSlash,
+  CircleXIcon,
+  Loader2Icon,
+  RefreshCw,
+} from "lucide-react";
 
 export type VideoStatusKind =
   | "Preparing"

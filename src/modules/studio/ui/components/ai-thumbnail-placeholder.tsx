@@ -16,8 +16,8 @@ export const AiThumbnailPlaceholder = ({
       {isActive && (
         <motion.div
           className={cn(
-            "absolute left-0 p-0.5 border border-dashed border-blue-200 rounded-md  h-[84px] w-[153px] group z-10  cursor-not-allowed",
-            size === "lg" && "h-full w-full border-none scale-[1.01]",
+            "absolute left-0 p-0.5 border border-dashed border-blue-200 rounded-md size-full group z-10  cursor-not-allowed",
+            size === "lg" && "!h-full !w-full !border-none p-0",
           )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -26,6 +26,7 @@ export const AiThumbnailPlaceholder = ({
           <div
             className={cn(
               "size-full relative rounded-sm ring-[3px] ring-blue-100 cursor-not-allowed pointer-events-none select-none",
+              size === "lg" && "ring-none ring-0",
               className,
             )}
           >
@@ -44,7 +45,7 @@ export const AiThumbnailPlaceholder = ({
             />
             <div
               className={cn(
-                "absolute top-0 left-0 bg-gray-100 size-full blur-lg scale-110 scale-y-125",
+                "absolute top-0 left-0 bg-gray-100 size-full blur-lg scale-105 scale-y-108",
                 size === "sm" && "blur-sm",
               )}
             />
