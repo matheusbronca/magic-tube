@@ -21,7 +21,6 @@ export const MobileSearchInput = () => {
 
   useEffect(() => {
     const handleSearchTrigger = () => {
-      console.log("RODEI");
       setIsOpen(false);
     };
 

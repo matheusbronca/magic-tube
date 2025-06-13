@@ -8,6 +8,7 @@ import { useVideoFormContext } from "../../context/video-form-section-context";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 export const VideoMatureField = () => {
   const {
@@ -39,14 +40,15 @@ export const VideoMatureField = () => {
         <FormItem className="w-full">
           <FormLabel>Audience</FormLabel>
           <Label
-            className="
-            bg-yellow-100
-            border-yellow-500/50
-            hover:bg-yellow-100/80 flex items-start gap-3 rounded-lg border p-2 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950"
+            className={cn(
+              "bg-yellow-100 border-yellow-500/50 hover:bg-yellow-100/80 flex items-start gap-3 rounded-lg border p-2 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950",
+              isDisabled && "opacity-50",
+            )}
           >
             <Checkbox
               id="toggle-2"
               defaultChecked={Boolean(video.hasMatureContent)}
+              disabled={isDisabled}
               onCheckedChange={(e) => handleOnChange(e as boolean, field)}
               className="border-yellow-500/50 bg-yellow-50  data-[state=checked]:border-blue-500 data-[state=checked]:bg-blue-500 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-500 dark:data-[state=checked]:bg-blue-500 "
             />

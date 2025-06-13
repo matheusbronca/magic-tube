@@ -11,6 +11,7 @@ import { snakeCaseToTitle } from "@/lib/utils";
 import { useVideoModal } from "../../context/video-modal-context";
 import { VideoLink } from "./video-link";
 import { APP_URL } from "@/constants";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const VideoPreviewPanel = () => {
   const {
@@ -64,31 +65,39 @@ export const VideoPreviewPanel = () => {
               subtitlesStatusLabel={subtitlesStatusLabel}
             />
 
-            <div className="bg-sidebar-accent p-1.5 rounded-lg">
-              <div className="ml-auto flex gap-2">
-                <Button
-                  className="flex gap-1 bg-white"
-                  variant="secondary"
-                  type="button"
-                  disabled={isLoading}
-                  onClick={() => setIsShareModalOpen?.(true)}
+            <AnimatePresence>
+              {!isLoading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-sidebar-accent p-1.5 rounded-lg"
                 >
-                  <Share2 className="text-foreground size-4" />
-                  Share
-                </Button>
-                <Button
-                  className="flex flex-col gap-1 bg-white"
-                  variant="secondary"
-                  size="icon"
-                  type="button"
-                  asChild
-                >
-                  <Link prefetch href={fullUrl} target="_blank">
-                    <ExternalLink className="text-foreground size-4" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
+                  <div className="ml-auto flex gap-2">
+                    <Button
+                      className="flex gap-1 bg-white"
+                      variant="secondary"
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => setIsShareModalOpen?.(true)}
+                    >
+                      <Share2 className="text-foreground size-4" />
+                      Share
+                    </Button>
+                    <Button
+                      className="flex flex-col gap-1 bg-white"
+                      variant="secondary"
+                      size="icon"
+                      type="button"
+                      asChild
+                    >
+                      <Link prefetch href={fullUrl} target="_blank">
+                        <ExternalLink className="text-foreground size-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="flex justify-between items-center gap-x-2">

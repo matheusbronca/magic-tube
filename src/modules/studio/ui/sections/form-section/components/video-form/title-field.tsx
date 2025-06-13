@@ -27,7 +27,6 @@ export const VideoTitleField = () => {
     field: ControllerRenderProps<FieldValues, "title">,
   ) => {
     field.onChange(e);
-    console.log("executei", form?.formState);
     if (dirtyStateRef === undefined) return;
 
     dirtyStateRef.current = {

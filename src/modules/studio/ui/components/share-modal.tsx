@@ -67,7 +67,7 @@ export const ShareModal = () => {
                 >
                   <Image
                     className="object-cover size-full text-xs font-normal"
-                    src={THUMBNAIL_FALLBACK}
+                    src={video.thumbnailUrl ?? THUMBNAIL_FALLBACK}
                     width={250}
                     height={250}
                     alt={video.title ?? "MagicTube Video Thumbnail"}

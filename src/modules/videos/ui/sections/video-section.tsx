@@ -68,8 +68,6 @@ const VideoSectionSuspense = ({ videoId, clientIp }: VideoSectionProps) => {
       clientIp,
     );
 
-    console.log("clientIp::: ", clientIp);
-
     if (!clientViews.wasCreated) return;
     const r = clientViews.record;
     createView.mutate({

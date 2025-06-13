@@ -34,8 +34,9 @@ export const VideoPlayer = ({
 
   useEffect(() => {
     mediaElRef.current?.load();
-    if (!isNSFWActive) {
-      mediaElRef.current?.removeAttribute("data-nsfw");
+
+    if (!isNSFWActive && mediaElRef.current) {
+      mediaElRef.current.removeAttribute("data-nsfw");
     }
   }, [isNSFWActive]);
 
@@ -43,6 +44,7 @@ export const VideoPlayer = ({
     <MuxPlayer
       ref={mediaElRef}
       data-nsfw
+      key={`nsfw:${isNSFWActive}:id:${playbackId}`}
       playbackId={playbackId || ""}
       poster={thumbnailUrl || THUMBNAIL_FALLBACK}
       playerInitTime={0}
