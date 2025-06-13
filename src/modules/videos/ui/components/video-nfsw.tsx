@@ -28,7 +28,7 @@ export const VideoNSFW = ({
               <span className="text-lg md:text-current">🔞</span>
               <span className="hidden md:block">(Not safe for work)</span>{" "}
             </div>
-            <p className="text-[8px] md:text-sm text-slate-100 text-pretty mt-2">
+            <p className="hidden md:block md:text-sm text-slate-100 text-pretty mt-2">
               This video contains mature content that may include explicit
               material, strong language, or graphic visuals.{" "}
               <strong>Viewer discretion</strong> is advised. The content in this
@@ -38,12 +38,22 @@ export const VideoNSFW = ({
                 author of this platform.
               </strong>{" "}
             </p>
-
-            <p className="text-slate-50 mt-2 md:mt-6 text-[8px] md:text-sm">
-              To proceed, please confirm that you are comfortable viewing{" "}
-              <strong>NSFW</strong> content.
+            <p className="md:hidden text-[10px] text-white">
+              This video contains mature content.{" "}
+              <strong className="font-semibold">
+                Viewer discretion is advised
+              </strong>
+              .{" "}
+              <strong className="font-semibold">
+                {"The creator's views do not reflect this platform's opinions."}
+              </strong>
             </p>
-            <div className="ml-auto mt-2 md:mt-4 flex gap-4 justify-between">
+
+            <p className="text-slate-50 mt-2 md:mt-6 text-[10px] md:text-sm">
+              To proceed, please confirm that you are comfortable viewing{" "}
+              <strong>NSFW</strong> (Not safe for work) content.
+            </p>
+            <div className="ml-auto mt-2 md:mt-4 flex gap-4 justify-between !text-xs md:!text-base">
               <Button
                 type="button"
                 size="lg"
@@ -51,7 +61,7 @@ export const VideoNSFW = ({
                 className="font-semibold"
                 onClick={() => router.back()}
               >
-                <ChevronLeft className="size-4" />
+                <ChevronLeft className=" size-3 md:size-4" />
                 Return
               </Button>
               <Button
@@ -61,9 +71,9 @@ export const VideoNSFW = ({
                   setIsOpen(false);
                   setHasUserOptInAction(true);
                 }}
-                className="bg-red-500 hover:bg-rose-600 font-semibold"
+                className="bg-red-500 hover:bg-rose-600 font-semibold !text-xs md:!text-base"
               >
-                <DoorOpen className="size-4" />
+                <DoorOpen className="size-3 md:size-4" />
                 {"I'm aware, proceed"}
               </Button>
             </div>

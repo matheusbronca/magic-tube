@@ -17,6 +17,8 @@ import {
   SignInButton,
   SignedIn,
   SignedOut,
+  ClerkLoading,
+  ClerkLoaded,
   useClerk,
   useAuth,
 } from "@clerk/nextjs";
@@ -93,6 +95,21 @@ const FooterItem = ({
 };
 
 const FooterUserItem = () => {
+  const clerk = useClerk();
+
+  if (!clerk.loaded)
+    return (
+      <Button className="flex flex-col gap-.5 items-center bg-transparent !shadow-none">
+        <Image
+          src="/user-placeholder.svg"
+          width={24}
+          height={24}
+          alt="Guest user"
+        />
+        <div className="text-[10px] text-foreground">Sign in</div>
+      </Button>
+    );
+
   return (
     <>
       <SignedIn>
@@ -147,19 +164,24 @@ export const MobileFooter = () => {
   if (!isMobile) return null;
   return (
     <>
-      <div className="block min-w-screen min-h-10" />
-      <div className="pt-1.5 pb-2 fixed bottom-0 left-0 w-screen min-w-screen max-w-screen  bg-white flex justify-evenly gap-4 border-muted-foreground border-t border-t-muted-foreground/25">
-        {items.slice(undefined, 2).map((item) => (
-          <FooterItem
-            key={item.title}
-            title={item.title}
-            icon={item.icon}
-            activeIcon={item.activeIcon}
-            url={item.url}
-          />
-        ))}
+      <div className="block min-w-screen min-h-10 h-10 max-h-10" />
+      <div
+        data-mobile-navigation
+        className="pt-2 px-2 fixed bottom-0 left-0 w-screen min-h-[54px] min-w-screen max-w-screen  bg-white flex justify-evenly gap-4 border-muted-foreground border-t border-t-muted-foreground/25 shadow-lg"
+      >
+        <div className="grid grid-cols-2 items-center gap-6">
+          {items.slice(undefined, 2).map((item) => (
+            <FooterItem
+              key={item.title}
+              title={item.title}
+              icon={item.icon}
+              activeIcon={item.activeIcon}
+              url={item.url}
+            />
+          ))}
+        </div>
         <Button
-          className="!p-0 !aspect-square bg-blue-500"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -mt-1 !p-0 !aspect-square bg-blue-500"
           asChild
           onClick={handleAuth}
         >
@@ -171,15 +193,18 @@ export const MobileFooter = () => {
             )}
           </Link>
         </Button>
-        <FooterItem
-          auth
-          key={items[2].title}
-          title={items[2].title}
-          icon={items[2].icon}
-          activeIcon={items[2].activeIcon}
-          url={items[2].url}
-        />
-        <FooterUserItem />
+        <div className="size-[20px] bg-transparent -z-10 pointer-events-none" />
+        <div className="grid grid-cols-2 items-center gap-6">
+          <FooterItem
+            auth
+            key={items[2].title}
+            title={items[2].title}
+            icon={items[2].icon}
+            activeIcon={items[2].activeIcon}
+            url={items[2].url}
+          />
+          <FooterUserItem />
+        </div>
       </div>
     </>
   );
