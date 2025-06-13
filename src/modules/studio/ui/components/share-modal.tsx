@@ -11,12 +11,9 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { Globe2Icon, LockIcon } from "lucide-react";
-import { APP_URL } from "@/constants";
-import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useVideoFormContext } from "../sections/form-section/context/video-form-section-context";
 import { useVideoModal } from "../sections/form-section/context/video-modal-context";
-import { toast } from "sonner";
 import { SocialShareButtons } from "./social-buttons";
 import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import { VideoLink } from "../sections/form-section/components/video-preview-panel/video-link";
@@ -26,21 +23,7 @@ export const ShareModal = () => {
     data: { video },
     actions: { setVisibilityToPublic },
   } = useVideoFormContext();
-  const fullUrl = `${APP_URL}/videos/${video.id}`;
-  const [isCopied, setIsCopied] = useState(false);
-
   const { isShareModalOpen, setIsShareModalOpen } = useVideoModal();
-
-  const onCopy = async () => {
-    await navigator.clipboard.writeText(fullUrl);
-    setIsCopied(true);
-    toast.success("Done!", {
-      description: "Copied to clipboard",
-      descriptionClassName: "!text-muted-foreground",
-    });
-
-    setTimeout(() => setIsCopied(false), 2000);
-  };
 
   return (
     <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
