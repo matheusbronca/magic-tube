@@ -17,7 +17,7 @@ const Page = async ({ searchParams }: PageProps) => {
   void prefetch(
     trpc.videos.getMany.infiniteQueryOptions({
       categoryId,
-      limit: DEFAULT_LIMIT,
+      limit: DEFAULT_LIMIT * 3,
     }),
   );
 

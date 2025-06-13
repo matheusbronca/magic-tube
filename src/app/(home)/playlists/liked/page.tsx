@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 const Page = async () => {
   void prefetch(
     trpc.playlists.getManyLiked.infiniteQueryOptions({
-      limit: DEFAULT_LIMIT,
+      limit: DEFAULT_LIMIT * 2,
     }),
   );
 

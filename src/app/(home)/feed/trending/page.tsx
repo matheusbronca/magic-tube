@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 const Page = async () => {
   void prefetch(
     trpc.videos.getManyTrending.infiniteQueryOptions({
-      limit: DEFAULT_LIMIT,
+      limit: DEFAULT_LIMIT * 3,
     }),
   );
 
