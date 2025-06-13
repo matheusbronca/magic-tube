@@ -34,7 +34,7 @@ const MaybeCategoriesSection = ({ categoryId }: CategoriesSectionProps) => {
 
   return (
     <FilterCarousel
-      onSelect={onSelect}
+      onSelectAction={onSelect}
       value={categoryId}
       data={carouselData}
     />
@@ -42,7 +42,7 @@ const MaybeCategoriesSection = ({ categoryId }: CategoriesSectionProps) => {
 };
 
 const CategoriesSkeleton = () => (
-  <FilterCarousel isLoading={true} data={[]} onSelect={() => {}} />
+  <FilterCarousel isLoading={true} data={[]} onSelectAction={() => {}} />
 );
 
 export const CategoriesSection = ({ categoryId }: CategoriesSectionProps) => {

@@ -14,6 +14,7 @@ import { LogOutIcon, VideoIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { StudioSidebarHeader } from "./studio-sidebar-header";
 import Image from "next/image";
+import { AuthorTag } from "@/components/author-tag";
 
 export const StudioSidebar = () => {
   const pathname = usePathname();
@@ -57,6 +58,9 @@ export const StudioSidebar = () => {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+        <div className="mt-auto">
+          <AuthorTag />
+        </div>
       </SidebarContent>
     </Sidebar>
   );

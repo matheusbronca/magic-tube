@@ -18,7 +18,7 @@ export const HomeNavBar = () => {
           {/* Menu and logo */}
           <div className="flex items-center flex-shrink-0">
             <Link prefetch href="/">
-              <div className="p-4 flex items-center gap-1">
+              <div className="p-4 pl-1 flex items-center gap-1">
                 <Image src="/logo.svg" alt="logo" width={36} height={36} />
                 <p className="text-xl font-semibold tracking-tight">
                   MagicTube

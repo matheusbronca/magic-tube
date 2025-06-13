@@ -6,6 +6,7 @@ import { PersonalSection } from "./personal-section";
 import { SubscriptionsSection } from "./subscriptions-section";
 import Link from "next/link";
 import Image from "next/image";
+import { AuthorTag } from "@/components/author-tag";
 
 export const HomeSidebar = () => {
   return (
@@ -27,6 +28,10 @@ export const HomeSidebar = () => {
             </Separator>
           </>
         </SignedIn>
+
+        <div className="mt-auto">
+          <AuthorTag />
+        </div>
       </SidebarContent>
     </Sidebar>
   );

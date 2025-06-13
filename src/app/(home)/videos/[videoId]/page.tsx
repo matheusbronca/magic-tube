@@ -4,6 +4,7 @@ import { appRouter } from "@/trpc/routers/_app";
 import { HydrateClient, prefetch } from "@/trpc/server";
 import { trpc } from "@/trpc/server";
 import type { Metadata, ResolvingMetadata } from "next";
+import { headers } from "next/headers";
 
 interface PageProps {
   params: Promise<{ videoId: string }>;
@@ -41,6 +42,9 @@ export async function generateMetadata(
 }
 
 const Page = async ({ params }: PageProps) => {
+  const header = await headers();
+  const clientIp = (header.get("x-forwarded-for") ?? "127.0.0.1").split(",")[0];
+
   const { videoId } = await params;
 
   void prefetch(trpc.videos.getOne.queryOptions({ id: videoId }));
@@ -61,7 +65,7 @@ const Page = async ({ params }: PageProps) => {
 
   return (
     <HydrateClient>
-      <VideoView videoId={videoId} />
+      <VideoView videoId={videoId} clientIp={clientIp} />
     </HydrateClient>
   );
 };

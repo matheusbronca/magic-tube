@@ -15,9 +15,11 @@ import { VideoTopRow, VideoTopRowSkeleton } from "../components/video-top-row";
 import { VideoNSFW } from "../components/video-nfsw";
 
 import { useAuth } from "@clerk/nextjs";
+import { getLocalVideoViews } from "../../client/db";
 
 interface VideoSectionProps {
   videoId: string;
+  clientIp: string;
 }
 
 export const VideoSectionSkeleton = () => {
@@ -29,17 +31,17 @@ export const VideoSectionSkeleton = () => {
   );
 };
 
-export const VideoSection = ({ videoId }: VideoSectionProps) => {
+export const VideoSection = ({ videoId, clientIp }: VideoSectionProps) => {
   return (
     <Suspense fallback={<VideoSectionSkeleton />}>
       <ErrorBoundary fallback={<p>Error</p>}>
-        <VideoSectionSuspense videoId={videoId} />
+        <VideoSectionSuspense videoId={videoId} clientIp={clientIp} />
       </ErrorBoundary>
     </Suspense>
   );
 };
 
-const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
+const VideoSectionSuspense = ({ videoId, clientIp }: VideoSectionProps) => {
   const queryClient = useQueryClient();
   const trpc = useTRPC();
   const { data: video } = useSuspenseQuery(
@@ -48,7 +50,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
 
   const [hasUserOptIn, setHasUserOptIn] = useState(false);
 
-  const { isSignedIn } = useAuth();
+  const { userId } = useAuth();
   const createView = useMutation(
     trpc.videoViews.create.mutationOptions({
       onSuccess: async () =>
@@ -58,17 +60,31 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     }),
   );
 
-  const handlePlay = () => {
-    if (!isSignedIn) return;
+  const handlePlay = async () => {
+    if (video.hasMatureContent && !hasUserOptIn) return;
+    const clientViews = await getLocalVideoViews(
+      video.id,
+      userId ?? undefined,
+      clientIp,
+    );
 
-    createView.mutate({ videoId });
+    console.log("clientIp::: ", clientIp);
+
+    if (!clientViews.wasCreated) return;
+    const r = clientViews.record;
+    createView.mutate({
+      userId: r.userId ?? null,
+      videoId: r.videoId,
+      clientIp: r.clientIp,
+      createdAt: r.date,
+    });
   };
 
   return (
     <>
       <div
         className={cn(
-          "aspect-video bg-black md:rounded-xl w-screen -ml-4 -mt-4 md:w-full md:overflow-hidden relative",
+          "aspect-video bg-black md:rounded-xl w-screen -ml-4 -mt-4 md:m-0 md:w-full md:overflow-hidden relative",
           video.muxStatus !== "ready" && "rounded-b-none",
         )}
       >

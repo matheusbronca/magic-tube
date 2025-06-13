@@ -250,13 +250,17 @@ export const videoViews = pgTable(
     videoId: uuid("video_id")
       .references(() => videos.id, { onDelete: "cascade" })
       .notNull(),
+    clientIp: varchar("client_ip", { length: 64 })
+      .notNull()
+      .default("127.0.0.1"),
+
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => [
     primaryKey({
       name: "video_views_pk",
-      columns: [t.userId, t.videoId],
+      columns: [t.clientIp, t.videoId, t.createdAt],
     }),
   ],
 );

@@ -15,7 +15,7 @@ mux-player {
 }
 
 mux-player::part(poster) {
-  transform: scale(1.05);
+  /* transform: scale(1.05); */
   background-color: var(--color-slate-200);
 }
 
@@ -264,5 +264,18 @@ mux-player[data-nsfw]::part(control-bar) {
   .cl-userButtonPopoverCard {
     left: 50% !important;
     transform: translateX(-50%) translateY(-5%) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-category-filter] {
+    /* Default fallback */
+    width: -moz-available;
+    /* Firefox */
+    width: -webkit-fill-available;
+    /* WebKit-based browsers */
+    width: stretch;
+    /* Standardized intrinsic width */
+    transform: translateX(-8px);
   }
 }

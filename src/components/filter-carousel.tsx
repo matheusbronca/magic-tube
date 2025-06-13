@@ -17,7 +17,7 @@ import { StickyHeader } from "./sticky-header";
 interface FilterCarouselProps {
   value?: string | null;
   isLoading?: boolean;
-  onSelect: (value: string | null) => void;
+  onSelectAction: (value: string | null) => void;
   data: {
     value: string;
     label: string;
@@ -26,7 +26,7 @@ interface FilterCarouselProps {
 
 export const FilterCarousel = ({
   value,
-  onSelect,
+  onSelectAction,
   data,
   isLoading,
 }: FilterCarouselProps) => {
@@ -49,8 +49,9 @@ export const FilterCarousel = ({
     <StickyHeader initialYPos={63}>
       <div className="h-10 hidden md:block" />
       <div
+        data-category-filter
         className={
-          "relative md:fixed md:-translate-y-3 w-full md:w-[calc(85%)] bg-white py-2 px-1 md:z-10"
+          "relative md:fixed md:-translate-y-3 w-full transition bg-white py-2 px-1 md:z-10"
         }
       >
         {/* Left fade */}
@@ -73,11 +74,11 @@ export const FilterCarousel = ({
             {!isLoading && (
               <CarouselItem
                 className="pl-7 md:pl-3 basis-auto"
-                onClick={() => onSelect?.(null)}
+                onClick={() => onSelectAction?.(null)}
               >
                 <Badge
                   variant={!value ? "default" : "secondary"}
-                  className="rounded-full px-3 py-1 cursor-pointer whitespace-nowrap text-sm"
+                  className="rounded-full px-3 py-1 cursor-pointer whitespace-nowrap text-sm select-none"
                 >
                   All
                 </Badge>
@@ -96,11 +97,11 @@ export const FilterCarousel = ({
                 <CarouselItem
                   key={item.value}
                   className="pl-3 basis-auto"
-                  onClick={() => onSelect(item.value)}
+                  onClick={() => onSelectAction(item.value)}
                 >
                   <Badge
                     variant={value === item.value ? "default" : "secondary"}
-                    className="rounded-full px-3 py-1 cursor-pointer whitespace-nowrap text-sm"
+                    className="rounded-full px-3 py-1 cursor-pointer whitespace-nowrap text-sm select-none"
                   >
                     {item.label}
                   </Badge>
