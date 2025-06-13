@@ -23,11 +23,9 @@ export const VideoLink = ({ videoId }: { videoId: string | undefined }) => {
 
   if (!videoId) return;
   return (
-    <div className="flex items-center gap-x-2 bg-blue-100 px-4 pr-0 rounded-lg">
+    <div className="flex items-center gap-x-2 bg-blue-100 px-4 pr-0 rounded-lg wrap-anywhere">
       <Link prefetch href={`/videos/${videoId}`}>
-        <p className="line-clamp-1 text-sm text-blue-500 max-w-[310px]">
-          {fullUrl}
-        </p>
+        <p className="line-clamp-1 text-sm text-blue-500">{fullUrl}</p>
       </Link>
       <Button
         type="button"

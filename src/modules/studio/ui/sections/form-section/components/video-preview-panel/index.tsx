@@ -70,7 +70,7 @@ export const VideoPreviewPanel = () => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-sidebar-accent p-1.5 rounded-lg"
+                  className="ml-auto bg-sidebar-accent p-1.5 rounded-lg"
                 >
                   <div className="ml-auto flex gap-2">
                     <Button
@@ -81,7 +81,7 @@ export const VideoPreviewPanel = () => {
                       onClick={() => setIsShareModalOpen?.(true)}
                     >
                       <Share2 className="text-foreground size-4" />
-                      Share
+                      <span className="hidden md:inline">Share</span>
                     </Button>
                     <Button
                       className="flex flex-col gap-1 bg-white"
