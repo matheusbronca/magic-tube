@@ -49,6 +49,7 @@ const items = [
 type FooterItem = Omit<(typeof items)[number], "activeIcon" | "auth"> & {
   activeIcon?: (typeof items)[number]["activeIcon"];
   auth?: boolean;
+  className?: string;
 };
 
 const FooterItem = ({
@@ -57,6 +58,7 @@ const FooterItem = ({
   icon: Icon,
   activeIcon: ActiveIcon,
   auth,
+  className,
 }: FooterItem) => {
   const pathname = usePathname();
   const { isSignedIn } = useAuth();
@@ -77,6 +79,7 @@ const FooterItem = ({
       className={cn(
         "flex flex-col gap-.5 items-center max-w-[48px] text-foregroung bg-transparent shadow-none",
         isActive && !ActiveIcon && "[&_svg]:fill-black",
+        className,
       )}
       onClick={handleAuth}
     >
@@ -97,7 +100,7 @@ const FooterUserItem = () => {
 
   if (!clerk.loaded)
     return (
-      <Button className="flex flex-col gap-.5 items-center bg-transparent !shadow-none">
+      <Button className="mx-auto flex flex-col gap-.5 items-center bg-transparent !shadow-none">
         <Image
           src="/user-placeholder.svg"
           width={24}
@@ -111,7 +114,7 @@ const FooterUserItem = () => {
   return (
     <>
       <SignedIn>
-        <div className="flex flex-col gap-.5 items-center [&_button]:!size-6 [&_.cl-userButtonTrigger]:!size-6 [&_.cl-avatarBox]:!size-full ">
+        <div className="mlx-auto flex flex-col gap-.5 items-center [&_button]:!size-6 [&_.cl-userButtonTrigger]:!size-6 [&_.cl-avatarBox]:!size-full ">
           <UserButton>
             <UserButton.MenuItems>
               <UserButton.Link
@@ -132,7 +135,7 @@ const FooterUserItem = () => {
       </SignedIn>
       <SignedOut>
         <SignInButton mode="modal">
-          <Button className="flex flex-col gap-.5 items-center bg-transparent !shadow-none">
+          <Button className="mx-auto flex flex-col gap-.5 items-center bg-transparent !shadow-none">
             <Image
               src="/user-placeholder.svg"
               width={24}
@@ -165,16 +168,17 @@ export const MobileFooter = () => {
       <div className="block min-w-screen min-h-10 h-10 max-h-10" />
       <div
         data-mobile-navigation
-        className="pt-2 px-2 fixed bottom-0 left-0 w-screen min-h-[54px] min-w-screen max-w-screen  bg-white flex justify-evenly gap-4 border-muted-foreground border-t border-t-muted-foreground/25 shadow-lg"
+        className="pt-2 px-2 fixed bottom-0 left-0 w-screen min-h-[54px] min-w-screen max-w-screen  bg-white flex justify-between gap-4 border-muted-foreground border-t border-t-muted-foreground/25 shadow-lg"
       >
-        <div className="grid grid-cols-2 items-center gap-6">
-          {items.slice(undefined, 2).map((item) => (
+        <div className="grid grid-cols-2 items-center grow">
+          {items.slice(undefined, 2).map((item, index) => (
             <FooterItem
               key={item.title}
               title={item.title}
               icon={item.icon}
               activeIcon={item.activeIcon}
               url={item.url}
+              className={index === 0 ? "mx-auto" : "ml-auto mr-[40px]"}
             />
           ))}
         </div>
@@ -191,8 +195,7 @@ export const MobileFooter = () => {
             )}
           </Link>
         </Button>
-        <div className="size-[20px] bg-transparent -z-10 pointer-events-none" />
-        <div className="grid grid-cols-2 items-center gap-6">
+        <div className="grid grid-cols-2 items-center grow">
           <FooterItem
             auth
             key={items[2].title}
@@ -200,6 +203,7 @@ export const MobileFooter = () => {
             icon={items[2].icon}
             activeIcon={items[2].activeIcon}
             url={items[2].url}
+            className="ml-[40px] mr-auto"
           />
           <FooterUserItem />
         </div>

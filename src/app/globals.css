@@ -16,7 +16,7 @@ mux-player {
 
 mux-player::part(poster) {
   /* transform: scale(1.05); */
-  background-color: var(--color-slate-200);
+  background-color: black;
 }
 
 mux-player[data-nsfw]::part(control-bar) {

@@ -139,7 +139,7 @@ export const VideoThumbnailField = () => {
               </div>
             </div>
 
-            <div className="bg-slate-200/50 md:hidden size-full flex items-center justify-center rounded-tr-lg rounded-br-lg">
+            <div className="bg-accent md:hidden size-full flex items-center justify-center rounded-tr-lg rounded-br-lg">
               <div className="flex flex-col  justify-evenly items-center size-full">
                 <Button
                   variant="secondary"

@@ -16,7 +16,9 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayerSkeleton = () => {
-  return <div className="aspect-video bg-black rounded-xl" />;
+  return (
+    <div className="aspect-video bg-black md:rounded-xl w-screen -ml-4 -mt-4 md:m-0 md:w-full md:overflow-hidden relative" />
+  );
 };
 
 export const VideoPlayer = ({

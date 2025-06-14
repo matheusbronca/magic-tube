@@ -28,7 +28,7 @@ export const VideoNSFW = ({
               <span className="text-lg md:text-current">🔞</span>
               <span className="hidden md:block">(Not safe for work)</span>{" "}
             </div>
-            <p className="hidden md:block md:text-sm text-slate-100 text-pretty mt-2">
+            <p className="hidden md:block md:text-sm text-white text-pretty mt-2">
               This video contains mature content that may include explicit
               material, strong language, or graphic visuals.{" "}
               <strong>Viewer discretion</strong> is advised. The content in this

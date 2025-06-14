@@ -17,16 +17,23 @@ export const VideoTopRowSkeleton = () => {
       <div className="flex flex-col gap-2">
         <Skeleton className="h-6 w-4/5 md:w-2/5" />
       </div>
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-3 w-[70%]">
+      <div className="flex items-center md:items-start justify-between w-full">
+        <div className="flex items-center gap-3 w-full">
           <Skeleton className="w-10 h-10 rounded-full shrink-0" />
           <div className="flex flex-col gap-2 w-full">
-            <Skeleton className="h-5 w-4/5 md:w-2/6" />
-            <Skeleton className="h-5 w-3/5 md:w-1/5" />
+            <Skeleton className="h-5 w-4/5 md:w-[50%]" />
+            <Skeleton className="h-5 w-3/5 md:w-[35%]" />
           </div>
-          <Skeleton className="h-9 w-2/6 md:1/6 rounded-full" />
+          <Skeleton className="h-9 min-w-[99px] md:1/6 rounded-full ml-auto md:mr-auto md:-ml-[40%]" />
         </div>
-        <div className="h-[120px] w-full" />
+        <div className="h-[120px] w-full hidden md:flex gap-2">
+          <Skeleton className="ml-auto w-[123px] h-9 rounded-full" />
+          <Skeleton className="w-9 h-9 rounded-full" />
+        </div>
+      </div>
+      <div className="w-full flex md:hidden gap-2">
+        <Skeleton className="w-[123px] h-9 rounded-full" />
+        <Skeleton className="w-9 h-9 rounded-full" />
       </div>
     </div>
   );
