@@ -26,16 +26,16 @@ export async function generateMetadata(
   // optionally access and extend (rather than replace) parent metadata
   const parentMetaData = await parent;
   const previousDescription = parentMetaData.description;
-  const previousImages = parentMetaData.openGraph?.images || [];
+  // const previousImages = parentMetaData.openGraph?.images || [];
 
   return {
     title: video.title,
     openGraph: {
-      images: [video.thumbnailUrl!, ...previousImages],
+      images: [video.thumbnailUrl!],
       description: video.description! ?? previousDescription,
     },
     twitter: {
-      images: [video.thumbnailUrl!, ...previousImages],
+      images: [video.thumbnailUrl!],
       description: video.description! ?? previousDescription,
     },
   };
