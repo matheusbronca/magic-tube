@@ -17,8 +17,6 @@ import {
   SignInButton,
   SignedIn,
   SignedOut,
-  ClerkLoading,
-  ClerkLoaded,
   useClerk,
   useAuth,
 } from "@clerk/nextjs";
